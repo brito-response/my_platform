@@ -3,9 +3,10 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageRepository } from './repository/message.repository';
 import { BaseService } from 'src/common/base/base.service';
 import { Message } from './entities/message.entity';
+import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Injectable()
-export class MessageService extends BaseService<Message, CreateMessageDto> {
+export class MessageService extends BaseService<Message, CreateMessageDto, UpdateMessageDto> {
   constructor(private readonly messageRepository: MessageRepository) {
     super(messageRepository);
   }

@@ -3,7 +3,7 @@ import { BaseRepository } from './base.repository';
 import { Model } from 'sequelize-typescript';
 import { ApiError } from '../errors/api.error';
 
-export class BaseService<T extends Model, C> {
+export class BaseService<T extends Model, C, U> {
   constructor(protected readonly repository: BaseRepository<T>) { }
 
   async create(createDto: C): Promise<T> {
@@ -21,10 +21,15 @@ export class BaseService<T extends Model, C> {
     return resource;
   }
 
-  async update(id: string, data: Partial<T>): Promise<[number, T[]]> {
-    const resource = await this.findOne(id);
-    return await this.repository.update(id, data);
-  }
+  async update(id: string, updateDto: U): Promise<[number, T[]]> {
+        await this.findOne(id);
+        return await this.repository.update(id, updateDto);
+    }
+
+    async updatePartial(id: string, data: Partial<T>): Promise<[number, T[]]> {
+        const resource = await this.findOne(id);
+        return await this.repository.updatePartial(id, data);
+    }
 
   async remove(id: string): Promise<number> {
     const resource = await this.repository.findOne(id);

@@ -25,6 +25,11 @@ export class BaseRepository<T extends Model> {
     return this.model.update(data, { where, returning: true });
   }
 
+  async updatePartial(id: string, data: Partial<T['_creationAttributes']>): Promise<[number, T[]]> {
+    const where = { [this.primaryKeyField]: id } as WhereOptions;
+    return this.model.update(data, { where, returning: true });
+  }
+
   async remove(id: string): Promise<number> {
     const where = { [this.primaryKeyField]: id } as WhereOptions;
     return this.model.destroy({ where });

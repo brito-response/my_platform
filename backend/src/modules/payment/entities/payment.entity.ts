@@ -21,9 +21,37 @@ export class Payment extends Model<InferAttributes<Payment>, InferCreationAttrib
 
     @Column({ type: DataType.STRING(50), allowNull: false })
     declare method: string;
-
+    
     @Column({ type: DataType.ENUM(...Object.values(TransactionStatus)), allowNull: false, defaultValue: TransactionStatus.PENDING, })
     declare transaction_status: TransactionStatus;
+
+    @Column(DataType.INTEGER)
+    declare numberOfInstallments: CreationOptional<number>;
+
+    @Column({ type: DataType.ARRAY(DataType.BOOLEAN), allowNull: false, defaultValue: new Array(12).fill(false) })
+    declare paymentsMonths: CreationOptional<boolean[]>;
+
+    @Column({ type: DataType.TEXT, allowNull: true })
+    declare chargeId?: CreationOptional<string>;
+
+    @Column({ type: DataType.TEXT, allowNull: true })
+    declare txId?: CreationOptional<string>;
+
+    @Column({ type: DataType.TEXT, allowNull: true })
+    declare locId?: CreationOptional<string>;
+
+    @Column(DataType.TEXT)
+    declare qrCode?: CreationOptional<string>;
+
+    @Column(DataType.TEXT)
+    declare imageQrCode?: CreationOptional<string>;
+
+    @Column(DataType.TEXT)
+    declare code: CreationOptional<string>;
+
+    @Column(DataType.DATE)
+    declare datePayment: CreationOptional<Date>;
+
 
     //relationships
     @ForeignKey(() => User)

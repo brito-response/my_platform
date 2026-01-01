@@ -5,9 +5,10 @@ import { Review } from './entities/review.entity';
 import { ReviewRepository } from './repository/review.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { InferAttributes } from 'sequelize';
+import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
-export class ReviewService extends BaseService<Review, CreateReviewDto> {
+export class ReviewService extends BaseService<Review, CreateReviewDto, UpdateReviewDto> {
   constructor(private readonly reviewRepository: ReviewRepository) {
     super(reviewRepository);
   }

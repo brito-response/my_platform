@@ -5,9 +5,10 @@ import { Category } from './entities/category.entity';
 import { CategoryRepository } from './repository/category.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { Job } from '../job/entities/job.entity';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
-export class CategoryService extends BaseService<Category, CreateCategoryDto> {
+export class CategoryService extends BaseService<Category, CreateCategoryDto, UpdateCategoryDto> {
   constructor(private readonly categoryRepository: CategoryRepository) {
     super(categoryRepository);
   }

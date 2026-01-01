@@ -30,7 +30,7 @@
 
 - Nodejs v 24
 > [!IMPORTANT]
-> create archive *_local.env_*  in frontend folder root of project:
+> create archive *_.env.local_*  in frontend folder root of project:
 > create archive *_.env_* in backend folder root of project:
 
 - Backend .env
@@ -44,9 +44,9 @@
     TOKEN_SECRET=token_secrets
 ```
 
-- Frontend local.env
+- Frontend .env.local
 ``` 
-    NEXT_PUBLIC_API_URL=http://localhost:3001
+    NEXT_PUBLIC_URL=http://localhost:3001
     NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
     NEXTAUTH_URL=http://localhost:3001
     NEXTAUTH_SECRET=secret

@@ -6,9 +6,10 @@ import { PortifolioRepository } from './repository/portifolio.repository';
 import { RegisterLinkDto } from './dto/register-link-portfolio.dto';
 import { ApiError } from 'src/common/errors/api.error';
 import { Project } from '../project/entities/project.entity';
+import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 
 @Injectable()
-export class PortfolioService extends BaseService<Portfolio, CreatePortfolioDto> {
+export class PortfolioService extends BaseService<Portfolio, CreatePortfolioDto,UpdatePortfolioDto> {
   constructor(private readonly portifolioRepository: PortifolioRepository) {
     super(portifolioRepository);
   }

@@ -14,9 +14,10 @@ import { Job } from '../job/entities/job.entity';
 import { PortfolioService } from '../portfolio/portfolio.service';
 import { Portfolio } from '../portfolio/entities/portfolio.entity';
 import { UsersData } from './utils/dto/user-report.dto';
+import { UpdateUserDto } from './utils/dto/update-user.dto';
 
 @Injectable()
-export class UserService extends BaseService<User, CreateUserDto> {
+export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto> {
   constructor(private readonly userRepository: UserRepository, private readonly emailService: EmailService, private readonly tokenService: TokenService, private readonly portifolioService: PortfolioService) {
     super(userRepository);
   }

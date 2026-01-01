@@ -3,6 +3,7 @@ import { EfiWebhookEvent } from './utils/efi-event.enum';
 import { EfiWebhookDto } from './dto/efi-webhook.dto';
 import { ApiError } from 'src/common/errors/api.error';
 import { PaymentRepository } from './repository/payment.repository';
+import { TransactionStatus } from './entities/payment.entity';
 
 @Injectable()
 export class EfiWebhookService {
@@ -46,43 +47,43 @@ export class EfiWebhookService {
         const txid = payload.data.txid;
         if (!txid) throw new ApiError('TXID não informado', 400);
 
-        const order = await this.paymentRepository.findByTxId(txid);
-        if (!order) return;
+        const payment = await this.paymentRepository.findByTxId(txid);
+        if (!payment) return;
 
-        order.status = OrderStatus.PAID;
-        await order.save();
+        payment.transaction_status = TransactionStatus.PENDING;
+        await payment.save();
     }
 
     private async handleBoletoPaid(payload: EfiWebhookDto) {
         const chargeId = payload.data.charge_id;
         if (!chargeId) return;
 
-        const order = await this.paymentRepository.findByChargeId(chargeId);
-        if (!order) return;
+        const payment = await this.paymentRepository.findByChargeId(chargeId);
+        if (!payment) return;
 
-        order.status = OrderStatus.PAID;
-        await order.save();
+        payment.transaction_status = TransactionStatus.PENDING;
+        await payment.save();
     }
 
     private async handleCreditCardApproved(payload: EfiWebhookDto) {
         const chargeId = payload.data.charge_id;
         if (!chargeId) return;
 
-        const order = await this.paymentRepository.findByChargeId(chargeId);
-        if (!order) return;
+        const payment = await this.paymentRepository.findByChargeId(chargeId);
+        if (!payment) return;
 
-        order.status = OrderStatus.PAID;
-        await order.save();
+        payment.transaction_status = TransactionStatus.PENDING;
+        await payment.save();
     }
 
     private async handleCreditCardRefused(payload: EfiWebhookDto) {
         const chargeId = payload.data.charge_id;
         if (!chargeId) return;
 
-        const order = await this.paymentRepository.findByChargeId(chargeId);
-        if (!order) return;
+        const payment = await this.paymentRepository.findByChargeId(chargeId);
+        if (!payment) return;
 
-        order.status = OrderStatus.CANCELED;
-        await order.save();
+        payment.transaction_status = TransactionStatus.PENDING;
+        await payment.save();
     }
 }

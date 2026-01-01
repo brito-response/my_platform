@@ -7,9 +7,10 @@ import { ApiError } from 'src/common/errors/api.error';
 import { ProjectPortfolio } from './entities/projectportfolio.entity';
 import { InferCreationAttributes } from 'sequelize';
 import { ProjectsData } from './dto/projects-data.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
-export class ProjectService extends BaseService<Project, CreateProjectDto> {
+export class ProjectService extends BaseService<Project, CreateProjectDto,UpdateProjectDto> {
   constructor(private readonly projectRepository: ProjectRepository) {
     super(projectRepository);
   }

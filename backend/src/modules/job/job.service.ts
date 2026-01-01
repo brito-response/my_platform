@@ -7,9 +7,10 @@ import { ApiError } from 'src/common/errors/api.error';
 import { UserService } from '../user/user.service';
 import { InferCreationAttributes } from 'sequelize';
 import { JobsData } from './dto/job-report.dto';
+import { UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
-export class JobService extends BaseService<Job, CreateJobDto> {
+export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
   constructor(private readonly jobRepository: JobRepository, private readonly userService: UserService) {
     super(jobRepository);
   }

@@ -5,9 +5,10 @@ import { Proposal, ProposalStatus } from './entities/proposal.entity';
 import { ProposalRepository } from './repository/proposal.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { ProposalsData } from './dto/proposal-report.dto';
+import { UpdateProposalDto } from './dto/update-proposal.dto';
 
 @Injectable()
-export class ProposalService extends BaseService<Proposal, CreateProposalDto> {
+export class ProposalService extends BaseService<Proposal, CreateProposalDto, UpdateProposalDto> {
   constructor(private readonly proposalRepository: ProposalRepository) {
     super(proposalRepository);
   }

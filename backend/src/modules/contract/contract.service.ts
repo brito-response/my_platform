@@ -5,9 +5,10 @@ import { Contract, ContractStatus } from './entities/contract.entity';
 import { ContractRepository } from './repository/contract.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { ContractsData } from './dto/contracts-data.dto';
+import { UpdateContractDto } from './dto/update-contract.dto';
 
 @Injectable()
-export class ContractService extends BaseService<Contract, CreateContractDto> {
+export class ContractService extends BaseService<Contract, CreateContractDto, UpdateContractDto> {
   constructor(private readonly contractRepository: ContractRepository) {
     super(contractRepository);
   }
