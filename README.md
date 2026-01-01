@@ -20,7 +20,7 @@
 
 ## Technologies_Used
 
-- React Native, Expo e tailwind css
+- Nestjs, Nextjs e tailwind css
 
 ## Designer_basis_for_application
 
@@ -28,30 +28,40 @@
 
 ## Prerequisites
 
-- Nodejs v 22
+- Nodejs v 24
 > [!IMPORTANT]
-> create archive *_.env_* in frontend folder root of project:
-> create archive *_local.env_* in backend folder root of project:
+> create archive *_local.env_*  in frontend folder root of project:
+> create archive *_.env_* in backend folder root of project:
 
+- Backend .env
+``` 
+    JWT_SECRET=token32b
+    JWT_REFRESH_SECRET=token32b
+    EMAIL_HOST=example@gmail.com  
+    EMAIL_PORT=587
+    EMAIL_USER=example@gmail.com  
+    EMAIL_PASS=example#
+    TOKEN_SECRET=token_secrets
 ```
-    # Backend
-    PORT=3000
 
-    # Frontend
+- Frontend local.env
+``` 
     NEXT_PUBLIC_API_URL=http://localhost:3001
-    NEXTAUTH_URL = http://localhost:3001
-    NEXTAUTH_SECRET = secret
+    NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
+    NEXTAUTH_URL=http://localhost:3001
+    NEXTAUTH_SECRET=secret
 ```
 
 ## Running_Application
 
-- Para criar o prebuild e criar pasta android 
+- Entre nessa pasta  e rode docker compose up -d para criar container do banco.
+- Abra terminal na pasta frontend
 ```
-    npx expo prebuild
+    npm i && npm run dev
 ```
-- run
+- Abra terminal na pasta backend
 ```
-    npm i && npx expo run:android
+    npm i && npm run start:dev
 ```
 
 - run tests
