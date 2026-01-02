@@ -12,7 +12,7 @@ export class JobController {
   constructor(private readonly jobService: JobService) { }
 
   @ApiBearerAuth('jwt')
-  @Roles('ADMIN', 'CLIENT', 'FREELANCER')
+  @Roles('ADMIN', 'CLIENT')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   async create(@Body() createJobDto: CreateJobDto) {

@@ -5,9 +5,10 @@ import { Job } from './entities/job.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { JobRepository } from './repository/job.repository';
 import { UserModule } from '../user/user.module';
+import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Job]), UserModule],
+  imports: [SequelizeModule.forFeature([Job]), UserModule, WalletModule],
   controllers: [JobController],
   providers: [JobService, JobRepository],
 })

@@ -5,30 +5,42 @@ import { Job, StatusJob } from './entities/job.entity';
 import { JobRepository } from './repository/job.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { UserService } from '../user/user.service';
-import { InferCreationAttributes } from 'sequelize';
 import { JobsData } from './dto/job-report.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { WalletService } from '../wallet/wallet.service';
+import { Sequelize } from 'sequelize-typescript';
+import { InferCreationAttributes } from 'sequelize';
 
 @Injectable()
 export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
-  constructor(private readonly jobRepository: JobRepository, private readonly userService: UserService) {
+  constructor(private readonly jobRepository: JobRepository, private readonly userService: UserService, private readonly walletService: WalletService, private readonly sequelize: Sequelize) {
     super(jobRepository);
   }
 
   async create(createJobDto: CreateJobDto): Promise<Job> {
-    const userExists = await this.userService.findOne(createJobDto.userId);
+    const transaction = await this.sequelize.transaction();
 
-    // ✅ Validação extra: deadline deve ser futura
-    const now = new Date();
-    if (createJobDto.deadline <= now) throw new ApiError('O prazo final deve ser uma data futura.', 400);
+    try {
+      const user = await this.userService.findOne(createJobDto.userId);
 
-    // ✅ Cria o job com status padrão OPEN
-    const jobToCreate = { ...createJobDto, status: createJobDto.status ?? StatusJob.OPEN };
+      if (user.typeuser !== 'CLIENT')
+        throw new ApiError('No permission', 403);
 
-    // ✅ Usa o repositório para criar
-    const newJob = await this.jobRepository.create(jobToCreate as InferCreationAttributes<Job>);
-    return newJob;
+      if (createJobDto.deadline <= new Date())
+        throw new ApiError('Deadline must be future', 400);
+
+      const job = await this.jobRepository.createWithTransaction({ ...createJobDto, status: createJobDto.status ?? StatusJob.OPEN } as InferCreationAttributes<Job>, transaction);
+      await this.walletService.subtractValueTransaction(user.id, job.budget, transaction);
+
+      await transaction.commit();
+      return job;
+
+    } catch (error) {
+      await transaction.rollback();
+      throw new ApiError(error.toString(), 400);
+    }
   }
+
 
   async findContractOfJob(jobId: string): Promise<string> {
     const contractId = await this.jobRepository.findContractIdOfJob(jobId);
