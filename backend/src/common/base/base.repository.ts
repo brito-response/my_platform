@@ -1,4 +1,4 @@
-import { FindAndCountOptions, WhereOptions } from 'sequelize';
+import { FindAndCountOptions, Transaction, WhereOptions } from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
 export class BaseRepository<T extends Model> {
@@ -10,6 +10,10 @@ export class BaseRepository<T extends Model> {
 
   async create(data: T['_creationAttributes']): Promise<T> {
     return this.model.create(data);
+  }
+
+  async createWithTransaction(data: T['_creationAttributes'], transaction?: Transaction): Promise<T> {
+    return this.model.create(data, { transaction });
   }
 
   async findAll(): Promise<T[]> {
@@ -28,6 +32,11 @@ export class BaseRepository<T extends Model> {
   async updatePartial(id: string, data: Partial<T['_creationAttributes']>): Promise<[number, T[]]> {
     const where = { [this.primaryKeyField]: id } as WhereOptions;
     return this.model.update(data, { where, returning: true });
+  }
+
+  async updateWithTransaction(id: string, data: Partial<T['_creationAttributes']>, transaction: Transaction): Promise<[number, T[]]> {
+    const where = { [this.primaryKeyField]: id } as WhereOptions;
+    return this.model.update(data, { where, returning: true, transaction });
   }
 
   async remove(id: string): Promise<number> {
