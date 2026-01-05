@@ -11,6 +11,7 @@ import { Proposal } from 'src/modules/proposal/entities/proposal.entity';
 import { Payment } from 'src/modules/payment/entities/payment.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { TypeWalletStatus, Wallet } from 'src/modules/wallet/entities/wallet.entity';
+import { JobFrella } from 'src/modules/jobfrellas/entities/jobfrella.entity';
 
 export enum TypeUser {
   ADMIN = 'ADMIN',
@@ -118,6 +119,9 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   @HasMany(() => Job)
   declare jobs?: Job[];
+
+  @HasMany(() => JobFrella)
+  declare jobsFrellas?: JobFrella[];
 
   //Listeners
   @BeforeCreate
