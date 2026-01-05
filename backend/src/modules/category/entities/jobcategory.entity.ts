@@ -20,7 +20,7 @@ export class JobCategory extends Model<InferAttributes<JobCategory>, InferCreati
     declare categoryId: string;
 
     @BelongsTo(() => Job)
-    job: Job;
+    declare job: Job;
 
     @BelongsTo(() => Category)
     declare category: Category;

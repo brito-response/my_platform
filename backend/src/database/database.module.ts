@@ -6,6 +6,7 @@ import { Contract } from 'src/modules/contract/entities/contract.entity';
 import { UserContract } from 'src/modules/contract/entities/usercontract.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { JobFrella } from 'src/modules/jobfrellas/entities/jobfrella.entity';
+import { JobFrellaProporsal } from 'src/modules/jobfrellas/entities/jobfrella_proporsal.entity';
 import { Message } from 'src/modules/message/entities/message.entity';
 import { UserMessage } from 'src/modules/message/entities/usuariomessage.entity';
 import { Payment } from 'src/modules/payment/entities/payment.entity';
@@ -26,7 +27,7 @@ import { Wallet } from 'src/modules/wallet/entities/wallet.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'platform_rdf',
-      models: [User, Review, Proposal, Portfolio, Payment, Message, Job, Contract, Category, UserMessage, UserContract, JobCategory, Project, ProjectPortfolio, Wallet, JobFrella],
+      models: [User, Review, Proposal, Portfolio, Payment, Message, Job, Contract, Category, UserMessage, UserContract, JobCategory, Project, ProjectPortfolio, Wallet, JobFrella, JobFrellaProporsal],
       autoLoadModels: true,
       synchronize: true,
     }),

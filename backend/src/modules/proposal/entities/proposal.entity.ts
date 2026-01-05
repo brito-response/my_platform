@@ -1,6 +1,8 @@
 import type { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
-import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import { Job } from 'src/modules/job/entities/job.entity';
+import { JobFrella } from 'src/modules/jobfrellas/entities/jobfrella.entity';
+import { JobFrellaProporsal } from 'src/modules/jobfrellas/entities/jobfrella_proporsal.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 
 export enum ProposalStatus {
@@ -42,5 +44,9 @@ export class Proposal extends Model<InferAttributes<Proposal>, InferCreationAttr
 
   @BelongsTo(() => Job)
   declare job?: Job;
+
+
+  @BelongsToMany(() => JobFrella, () => JobFrellaProporsal)
+  declare jobsFreelas: JobFrella[]
 
 }
