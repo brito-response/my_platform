@@ -39,6 +39,9 @@ export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job
   @Column(DataType.ENUM(...Object.values(JobLevel)))
   declare level: JobLevel;
 
+  @Column(DataType.INTEGER)
+  declare maxFreelancers:number;
+
   @Column(DataType.FLOAT)
   declare budget: number; // orçamento
 

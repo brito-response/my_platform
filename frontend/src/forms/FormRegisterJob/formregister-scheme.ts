@@ -5,6 +5,7 @@ export const jobFormSchema = yup.object({
   title: yup.string().required("O título é obrigatório").min(3, "O título deve ter pelo menos 3 caracteres"),
   description: yup.string().required("A descrição é obrigatória").min(5, "A descrição deve ter pelo menos 5 caracteres"),
   level: yup.mixed<JobLevel>().oneOf(Object.values(JobLevel)).required("O level é obrigatório"),
+  maxFreelancers: yup.number().required("O numero maximo de freelancers aceitos para esse trabalho é obrigatório").min(0, "O orçamento não pode ser negativo"),
   budget: yup.number().required("O orçamento é obrigatório").min(0, "O orçamento não pode ser negativo"),
   deadline: yup.date().required("O prazo é obrigatório").min(new Date(), "O prazo deve ser uma data futura"),
   status: yup.mixed<StatusJob>().oneOf(Object.values(StatusJob)).required("O status é obrigatório"),

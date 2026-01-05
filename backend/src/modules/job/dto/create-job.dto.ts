@@ -14,6 +14,12 @@ export class CreateJobDto {
     @IsString({ message: 'A descrição deve ser um texto.' })
     description: string;
 
+    @ApiProperty({ example: 2500, description: 'total maximo de freelancers a serem aceitos para o job.' })
+    @IsNotEmpty({ message: 'numero maximo de freelancers é obrigatório.' })
+    @IsNumber({}, { message: 'maxFreelancers deve ser um número.' })
+    @Min(0, { message: 'maxFreelancers não pode ser negativo.' })
+    maxFreelancers: number;
+
     @ApiProperty({ example: 2500, description: 'Orçamento total disponível para o job (em reais).' })
     @IsNotEmpty({ message: 'O orçamento é obrigatório.' })
     @IsNumber({}, { message: 'O orçamento deve ser um número.' })

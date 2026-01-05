@@ -15,7 +15,7 @@ export const FormRegisterJob = () => {
   const router = useRouter();
   const methods = useForm<JobFormType>({
     resolver: yupResolver(jobFormSchema), mode: "onChange",
-    defaultValues: { title: "", description: "", level: JobLevel.LOW, budget: 0, deadline: new Date(), status: StatusJob.OPEN, link1: "", link2: "" },
+    defaultValues: { title: "", description: "", level: JobLevel.LOW, maxFreelancers: 0, budget: 0, deadline: new Date(), status: StatusJob.OPEN, link1: "", link2: "" },
   });
 
   const handleSubmitRegister = async (data: JobFormType) => {
@@ -57,7 +57,7 @@ export const FormRegisterJob = () => {
             ))}
           </select>
         </div>
-
+        <InputCustom name="maxFreelancers" label="Número Max de Freelancers aceitos para esse Job" type="number" required />
         <InputCustom name="budget" label="Orçamento" type="number" required />
         <InputCustom name="deadline" label="Prazo final" type="date" asDate required />
 

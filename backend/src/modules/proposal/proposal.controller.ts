@@ -7,7 +7,6 @@ import { UpdateProposalDto } from './dto/update-proposal.dto';
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) { }
 
-  
   @Post()
   async create(@Body() createProposalDto: CreateProposalDto) {
     return await this.proposalService.create(createProposalDto);
