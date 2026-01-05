@@ -15,12 +15,13 @@ import { ProjectModule } from './modules/project/project.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { JobfrellasModule } from './modules/jobfrellas/jobfrellas.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     ServeStaticModule.forRoot({ rootPath: join(__dirname, '..', 'uploads'), serveRoot: '/uploads' }),
-    DatabaseModule, UserModule, PortfolioModule, JobModule, ProposalModule, ContractModule, PaymentModule, MessageModule, ReviewModule, CategoryModule, ProjectModule, WalletModule],
+    DatabaseModule, UserModule, PortfolioModule, JobModule, ProposalModule, ContractModule, PaymentModule, MessageModule, ReviewModule, CategoryModule, ProjectModule, WalletModule, JobfrellasModule],
   controllers: [AppController],
   providers: [],
 })
