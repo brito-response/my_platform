@@ -1,5 +1,6 @@
 import type { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
 import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript"
+import { Job } from "src/modules/job/entities/job.entity";
 import { User } from "src/modules/user/entities/user.entity";
 
 export enum JobFrellaStatus {
@@ -22,7 +23,6 @@ export class JobFrella extends Model<InferAttributes<JobFrella>, InferCreationAt
     declare status: JobFrellaStatus;
 
     /**
-        jobId
         proposalId
      */
 
@@ -34,6 +34,13 @@ export class JobFrella extends Model<InferAttributes<JobFrella>, InferCreationAt
 
     @BelongsTo(() => User)
     declare user?: User;
+
+    @ForeignKey(() => Job)
+    @Column(DataType.UUID)
+    declare jobId: string;
+
+    @BelongsTo(() => Job)
+    declare job?: Job;
 
 
 }

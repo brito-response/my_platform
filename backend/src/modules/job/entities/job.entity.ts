@@ -3,6 +3,7 @@ import { BelongsTo, BelongsToMany, Column, DataType, Default, ForeignKey, HasMan
 import { Category } from 'src/modules/category/entities/category.entity';
 import { JobCategory } from 'src/modules/category/entities/jobcategory.entity';
 import { Contract } from 'src/modules/contract/entities/contract.entity';
+import { JobFrella } from 'src/modules/jobfrellas/entities/jobfrella.entity';
 import { Payment } from 'src/modules/payment/entities/payment.entity';
 import { Proposal } from 'src/modules/proposal/entities/proposal.entity';
 import { User } from 'src/modules/user/entities/user.entity';
@@ -74,5 +75,8 @@ export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job
 
   @HasOne(() => Contract)
   declare contract?: Contract;
+
+  @HasMany(() => JobFrella)
+  declare jobsFrellas?: JobFrella[];
 
 }
