@@ -6,6 +6,7 @@ import { Job } from "src/modules/job/entities/job.entity";
 import { User } from "src/modules/user/entities/user.entity";
 import { ProposalsData, ProposalStatusCount } from "../dto/proposal-report.dto";
 import { Sequelize } from "sequelize-typescript";
+import { Transaction } from "sequelize";
 
 @Injectable()
 export class ProposalRepository extends BaseRepository<Proposal> {
@@ -43,4 +44,9 @@ export class ProposalRepository extends BaseRepository<Proposal> {
 
         return { totalProposals, proposalsByStatus } as ProposalsData;
     }
+
+    async findByIdWithTransaction(proposalId: string, transaction: Transaction): Promise<Proposal | null> {
+        return await this.proposalModel.findOne({ where: { proposalId }, transaction, lock: transaction.LOCK.UPDATE });
+    }
+    
 }

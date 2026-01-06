@@ -9,5 +9,6 @@ import { ProposalRepository } from './repository/proposal.repository';
   imports: [SequelizeModule.forFeature([Proposal])],
   controllers: [ProposalController],
   providers: [ProposalService, ProposalRepository],
+  exports:[ProposalService]
 })
 export class ProposalModule { }

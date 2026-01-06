@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateJobDto } from './dto/create-job.dto';
 import { BaseService } from 'src/common/base/base.service';
 import { Job, StatusJob } from './entities/job.entity';
@@ -9,11 +9,19 @@ import { JobsData } from './dto/job-report.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { WalletService } from '../wallet/wallet.service';
 import { Sequelize } from 'sequelize-typescript';
-import { InferCreationAttributes } from 'sequelize';
+import { InferCreationAttributes, Transaction } from 'sequelize';
+import { ProposalService } from '../proposal/proposal.service';
+import { ProposalStatus } from '../proposal/entities/proposal.entity';
+import { JobfrellasService } from '../jobfrellas/jobfrellas.service';
 
 @Injectable()
 export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
-  constructor(private readonly jobRepository: JobRepository, private readonly userService: UserService, private readonly walletService: WalletService, private readonly sequelize: Sequelize) {
+  constructor(private readonly jobRepository: JobRepository, private readonly userService: UserService,
+    @Inject(forwardRef(() => WalletService))
+    private readonly walletService: WalletService,
+    private readonly sequelize: Sequelize,
+    private readonly proposalService: ProposalService, private readonly jobfrellasService: JobfrellasService
+  ) {
     super(jobRepository);
   }
 
@@ -40,7 +48,6 @@ export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
       throw new ApiError(error.toString(), 400);
     }
   }
-
 
   async findContractOfJob(jobId: string): Promise<string> {
     const contractId = await this.jobRepository.findContractIdOfJob(jobId);
@@ -75,5 +82,61 @@ export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
   async getReports(): Promise<JobsData> {
     return await this.jobRepository.findAllJobsData();
   }
+
+  async acceptProposal(jobId: string, proposalId: string, clientId: string) {
+    const transaction = await this.sequelize.transaction();
+
+    try {
+      const job = await this.jobRepository.findByIdWithTransaction(jobId, transaction);
+
+      if (!job) throw new ApiError('Job not found', 404);
+      if (job.userId !== clientId) throw new ApiError('No permission', 403);
+
+      if (job.acceptedFreelancersCount >= job.maxFreelancers) throw new ApiError('Freelancer limit reached', 400);
+
+      const proposal = await this.proposalService.getByIdWithTransaction(proposalId, transaction);
+
+      if (!proposal || proposal.jobId !== jobId)
+        throw new ApiError('Invalid proposal', 400);
+
+      if (proposal.status !== 'PENDING') throw new ApiError('Proposal already processed', 400);
+
+      const amountToReceive = Number((job.budget / job.maxFreelancers).toFixed(2));
+      await this.proposalService.updateWithTransaction(proposalId, { status: ProposalStatus.ACCEPTED }, transaction);
+
+      await this.jobfrellasService.createWithTransaction({ jobId, freelancerId: proposal.userId, proposalId, amountToReceive, status: 'ACCEPTED' }, transaction);
+
+      const newCount = job.acceptedFreelancersCount + 1;
+      job.acceptedFreelancersCount = newCount;
+
+      job.status = newCount === job.maxFreelancers ? StatusJob.IN_PROGRESS : job.status;
+      job.save();
+      await transaction.commit();
+
+    } catch (error) {
+      await transaction.rollback();
+      throw new ApiError(error, 400);
+    }
+  }
+
+  async completeJob(jobId: string, clientId: string) {
+    const job = await this.jobRepository.findById(jobId);
+
+    if (!job) throw new ApiError('Job not found', 404);
+    if (job.userId !== clientId) throw new ApiError('No permission', 403);
+
+    if (job.status !== StatusJob.IN_PROGRESS)
+      throw new ApiError('Job not in progress', 400);
+
+    await this.jobRepository.update(jobId, { status: StatusJob.COMPLETED });
+
+  }
+
+  async getByIdWithTransaction(jobId: string, transaction: Transaction): Promise<Job> {
+    const job = await this.jobRepository.findByIdWithTransaction(jobId, transaction);
+    if (!job) throw new ApiError("Proposal not found", 404);
+    return job;
+  }
+
 
 }

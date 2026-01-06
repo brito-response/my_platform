@@ -43,6 +43,9 @@ export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job
   @Column(DataType.INTEGER)
   declare maxFreelancers:number;
 
+  @Column(DataType.INTEGER)
+  declare acceptedFreelancersCount: CreationOptional<number>;
+
   @Column(DataType.FLOAT)
   declare budget: number; // orçamento
 

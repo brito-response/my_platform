@@ -3,7 +3,7 @@ import { BaseRepository } from "src/common/base/base.repository";
 import { InjectModel } from "@nestjs/sequelize";
 import { Job, JobLevel, StatusJob } from "../entities/job.entity";
 import { Contract } from "src/modules/contract/entities/contract.entity";
-import { col, fn, Op, Sequelize } from "sequelize";
+import { col, fn, Op, Sequelize, Transaction } from "sequelize";
 import { Proposal } from "src/modules/proposal/entities/proposal.entity";
 import { JobLevelStats, JobsData } from "../dto/job-report.dto";
 
@@ -73,13 +73,9 @@ export class JobRepository extends BaseRepository<Job> {
 
     async findAllJobsData(): Promise<JobsData> {
         const sequelize = this.jobModel.sequelize as Sequelize;
-        // Total de jobs
         const totalJobs = await this.jobModel.count();
-
-        // Total de jobs completados
         const totalCompletedJobs = await this.jobModel.count({ where: { status: StatusJob.COMPLETED } });
 
-        // Quantidade e média de orçamento por level
         const levels = Object.values(JobLevel);
         const jobsByLevel: JobLevelStats[] = [];
 
@@ -90,11 +86,24 @@ export class JobRepository extends BaseRepository<Job> {
             jobsByLevel.push({ level, count, averageBudget });
         }
 
-        // Média de propostas por job
         const totalProposals = await Proposal.count();
         const averageProposalsPerJob = totalJobs > 0 ? totalProposals / totalJobs : 0;
 
         return { totalJobs, totalCompletedJobs, jobsByLevel, averageProposalsPerJob } as JobsData;
+    }
+
+    async findByIdWithTransaction(jobId: string, transaction: Transaction): Promise<Job | null> {
+        return await this.jobModel.findOne({
+            where: { jobId },
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        });
+    }
+
+    async findById(jobId: string): Promise<Partial<Job> | null> {
+        const job = await this.jobModel.findByPk(jobId);
+        if (!job) return null;
+        return job.get({ plain: true }) as Partial<Job>;
     }
 
 }
