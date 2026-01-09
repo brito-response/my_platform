@@ -7,6 +7,7 @@ export interface JobInput {
     title: string;
     description: string;
     level: JobLevel;
+    maxFreelancers: number;
     budget: number;
     deadline: string;
     status: StatusJob
@@ -20,6 +21,7 @@ export interface JobOutput {
     title: string;
     description: string;
     level: JobLevel;
+    maxFreelancers: number;
     budget: number;
     deadline: Date;
     status: StatusJob;
@@ -34,6 +36,7 @@ export interface JobWithProposals {
     title: string;
     description: string;
     level: JobLevel;
+    maxFreelancers: number;
     budget: number;
     deadline: Date;
     status: StatusJob;

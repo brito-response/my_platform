@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Session } from "@/utils/data_types/session";
-import { JobsGrid } from "@/components/ProjectsGrid";
+import { JobsGrid } from "@/components/JobsGrid";
 import { ProjectsDataOut } from "@/utils/data_types/projects";
 import { ProposalsDataOut } from "@/utils/data_types/proposals";
 import { UsersDataOut } from "@/utils/data_types/users";

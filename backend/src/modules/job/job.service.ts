@@ -27,25 +27,24 @@ export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
 
   async create(createJobDto: CreateJobDto): Promise<Job> {
     const transaction = await this.sequelize.transaction();
-
     try {
       const user = await this.userService.findOne(createJobDto.userId);
 
-      if (user.typeuser !== 'CLIENT')
-        throw new ApiError('No permission', 403);
+      if (user.typeuser !== 'CLIENT') throw new ApiError('No permission', 403);
 
       if (createJobDto.deadline <= new Date())
         throw new ApiError('Deadline must be future', 400);
 
       const job = await this.jobRepository.createWithTransaction({ ...createJobDto, status: createJobDto.status ?? StatusJob.OPEN } as InferCreationAttributes<Job>, transaction);
-      await this.walletService.subtractValueTransaction(user.id, job.budget, transaction);
+      await this.walletService.subtractValueTransaction(user.userId, job.budget, transaction);
 
       await transaction.commit();
       return job;
 
     } catch (error) {
       await transaction.rollback();
-      throw new ApiError(error.toString(), 400);
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(error.message ?? 'Internal error', 500);
     }
   }
 

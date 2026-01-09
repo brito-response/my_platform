@@ -26,8 +26,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 const job = await response.json();
                 return NextResponse.json(job, { status: 201 });
             }
+            return NextResponse.json({ message: "Unauthorized error." }, { status: response.status });
         }
-        return NextResponse.json({ message: "The request contains errors, such as invalid data, incorrect format, or missing required fields." }, { status: 400 });
+        return NextResponse.json({ message: "The request conatin error" }, { status: 400 });
     } catch (error) {
         throw new Error("Erro ao conectar no backend.");
     }

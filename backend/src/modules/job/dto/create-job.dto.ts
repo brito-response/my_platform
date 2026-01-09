@@ -14,6 +14,11 @@ export class CreateJobDto {
     @IsString({ message: 'A descrição deve ser um texto.' })
     description: string;
 
+    @ApiPropertyOptional({ enum: JobLevel, example: JobLevel.LOW, description: 'Level inicial do job (opcional, padrão: LOW).' })
+    @IsOptional()
+    @IsString({ message: 'O level deve ser uma string válida.' })
+    level?: JobLevel;
+
     @ApiProperty({ example: 2500, description: 'total maximo de freelancers a serem aceitos para o job.' })
     @IsNotEmpty({ message: 'numero maximo de freelancers é obrigatório.' })
     @IsNumber({}, { message: 'maxFreelancers deve ser um número.' })
@@ -31,11 +36,6 @@ export class CreateJobDto {
     @IsDate()
     @Type(() => Date)
     deadline: Date;
-
-    @ApiPropertyOptional({ enum: JobLevel, example: JobLevel.LOW, description: 'Level inicial do job (opcional, padrão: LOW).' })
-    @IsOptional()
-    @IsString({ message: 'O level deve ser uma string válida.' })
-    level?: JobLevel;
 
     @ApiPropertyOptional({ enum: StatusJob, example: StatusJob.OPEN, description: 'Status inicial do job (opcional, padrão: OPEN).' })
     @IsOptional()

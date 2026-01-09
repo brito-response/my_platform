@@ -33,8 +33,10 @@ export const FormRegisterJob = () => {
       if (response.ok) {
         toast.success("Job criado com sucesso!");
         router.push("/manager");
+      } else if (response.status == 403) {
+        toast.error("Você não tem permissão para criar Job.");
       } else {
-        toast.error("Erro ao criar o job");
+        toast.error("erro no servidor, deu pau.");
       }
     } catch {
       toast.error("Erro de comunicação com o servidor");
