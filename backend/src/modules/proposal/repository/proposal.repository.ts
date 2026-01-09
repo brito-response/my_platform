@@ -48,5 +48,14 @@ export class ProposalRepository extends BaseRepository<Proposal> {
     async findByIdWithTransaction(proposalId: string, transaction: Transaction): Promise<Proposal | null> {
         return await this.proposalModel.findOne({ where: { proposalId }, transaction, lock: transaction.LOCK.UPDATE });
     }
-    
+
+    async findByJobAndUser(jobId: string, userId: string): Promise<Proposal | null> {
+        return this.proposalModel.findOne({
+            where: {
+                jobId,
+                userId,
+            },
+        });
+    }
+
 }

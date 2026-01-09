@@ -31,9 +31,7 @@ export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
       const user = await this.userService.findOne(createJobDto.userId);
 
       if (user.typeuser !== 'CLIENT') throw new ApiError('No permission', 403);
-
-      if (createJobDto.deadline <= new Date())
-        throw new ApiError('Deadline must be future', 400);
+      if (createJobDto.deadline <= new Date()) throw new ApiError('Deadline must be future', 400);
 
       const job = await this.jobRepository.createWithTransaction({ ...createJobDto, status: createJobDto.status ?? StatusJob.OPEN } as InferCreationAttributes<Job>, transaction);
       await this.walletService.subtractValueTransaction(user.userId, job.budget, transaction);

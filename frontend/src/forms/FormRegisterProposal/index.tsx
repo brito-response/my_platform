@@ -31,7 +31,7 @@ export const FormRegisterProposal: React.FC<FormRegisterProposalProps> = ({ jobI
         toast.success("Proposta enviada com sucesso!");
         router.push("/manager");
       } else {
-        toast.error("Erro ao enviar a proposta. Tente novamente.");
+        toast.error("Você ja fez 1 proposta para esse trabalho, não é permitido fazer outra.");
       }
     } catch (error) {
       toast.error("Falha na comunicação com o servidor.");

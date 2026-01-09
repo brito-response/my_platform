@@ -7,11 +7,18 @@ import { ApiError } from 'src/common/errors/api.error';
 import { ProposalsData } from './dto/proposal-report.dto';
 import { UpdateProposalDto } from './dto/update-proposal.dto';
 import { Transaction } from 'sequelize';
+import { filter } from 'rxjs';
 
 @Injectable()
 export class ProposalService extends BaseService<Proposal, CreateProposalDto, UpdateProposalDto> {
   constructor(private readonly proposalRepository: ProposalRepository) {
     super(proposalRepository);
+  }
+
+  async createForCustomProblem(createProposalDto: CreateProposalDto): Promise<Proposal> {
+    const exists = await this.proposalRepository.findByJobAndUser(createProposalDto.jobId, createProposalDto.userId);
+    if (exists) throw new ApiError('You already made a proposal for this job', 400);
+    return this.create(createProposalDto);
   }
 
   async findByJob(jobId: string): Promise<Proposal[]> {
@@ -45,7 +52,7 @@ export class ProposalService extends BaseService<Proposal, CreateProposalDto, Up
   async updateWithTransaction(proposalId: string, data: Partial<Proposal>, transaction: Transaction): Promise<Proposal> {
     const proposal = await this.proposalRepository.findByIdWithTransaction(proposalId, transaction);
     if (!proposal) throw new Error('Proposal not found');
-    
+
     await proposal.update(data, { transaction });
     return proposal;
   }

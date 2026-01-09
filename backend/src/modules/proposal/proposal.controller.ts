@@ -9,7 +9,7 @@ export class ProposalController {
 
   @Post()
   async create(@Body() createProposalDto: CreateProposalDto) {
-    return await this.proposalService.create(createProposalDto);
+    return await this.proposalService.createForCustomProblem(createProposalDto);
   }
   
   @Get()
