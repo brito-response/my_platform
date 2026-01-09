@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@reduxjs/toolkit": "^2.9.0",
     "clsx": "^2.1.1",
     "formdata-node": "^6.0.3",
     "formidable": "^3.5.4",
@@ -22,7 +21,6 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.64.0",
-    "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
     "recharts": "^3.2.1",
     "socket.io-client": "^4.8.1",

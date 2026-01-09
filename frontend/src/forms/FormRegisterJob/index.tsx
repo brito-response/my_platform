@@ -10,13 +10,17 @@ import { toast } from "react-toastify";
 import { jobFormSchema, JobFormType } from "./formregister-scheme";
 import { toISODate } from "@/utils/transforms/data";
 import { RichTextEditor } from "../RichText";
+import { useEffect } from "react";
+import { useWallet } from "@/contexts/wallet_context";
 
 export const FormRegisterJob = () => {
+  const { setDebitValue } = useWallet();
   const router = useRouter();
   const methods = useForm<JobFormType>({
     resolver: yupResolver(jobFormSchema), mode: "onChange",
     defaultValues: { title: "", description: "", level: JobLevel.LOW, maxFreelancers: 0, budget: 0, deadline: new Date(), status: StatusJob.OPEN, link1: "", link2: "" },
   });
+  const budget = methods.watch("budget");
 
   const handleSubmitRegister = async (data: JobFormType) => {
     // trnsform data 
@@ -42,6 +46,10 @@ export const FormRegisterJob = () => {
       toast.error("Erro de comunicação com o servidor");
     }
   };
+
+  useEffect(() => {
+    setDebitValue(Number(budget) || 0);
+  }, [budget]);
 
   return (
     <FormProvider {...methods}>
@@ -73,8 +81,6 @@ export const FormRegisterJob = () => {
             ))}
           </select>
         </div>
-
-
 
         <InputCustom name="link1" label="Link de referência 1" required />
         <InputCustom name="link2" label="Link de referência 2" required />

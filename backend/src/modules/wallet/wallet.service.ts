@@ -19,6 +19,12 @@ export class WalletService extends BaseService<Wallet, CreateWalletDto, UpdateWa
     super(walletRepository);
   }
 
+  async finByUserId(userId: string): Promise<Wallet> {
+    const wallet = await this.walletRepository.findOneByUserId(userId);
+    if (!wallet) throw new ApiError("this wallet nor found", 404);
+    return wallet;
+  }
+
   async subtractValueTransaction(userId: string, amount: number, transaction: Transaction): Promise<Wallet> {
     const wallet = await this.walletRepository.findOneByUserId(userId, transaction);
 

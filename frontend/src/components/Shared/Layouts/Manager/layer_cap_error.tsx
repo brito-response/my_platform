@@ -4,14 +4,10 @@ import { useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
-import { Provider } from "react-redux";
-import { store } from "@/store/redux.store";
 
-type LayoutCaptureErrorProps = {
-  children: ReactNode;
-};
+type LayoutCaptureErrorProps = { children: ReactNode; };
 
-export const LayoutCaptureError: React.FC<LayoutCaptureErrorProps> = ({children}) => {
+export const LayoutCaptureError: React.FC<LayoutCaptureErrorProps> = ({ children }) => {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
@@ -34,7 +30,7 @@ export const LayoutCaptureError: React.FC<LayoutCaptureErrorProps> = ({children}
   }, [error]);
   return (
     <div style={{ width: "100%", height: "100%" }}>
-      <Provider store={store}>{children}</Provider>
+      {children}
     </div>
   );
 };

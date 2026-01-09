@@ -48,6 +48,7 @@
 ``` 
     NEXT_PUBLIC_URL=http://localhost:3001
     NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
+    NEXT_PUBLIC_GITHUB_TOKEN=chico_da_bica
     NEXTAUTH_URL=http://localhost:3001
     NEXTAUTH_SECRET=secret
 ```
