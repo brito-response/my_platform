@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Loader } from "@/components/Shared/Loader";
 import { MessageCircleMoreIcon, CalendarDaysIcon, DollarSignIcon } from "lucide-react";
 import { Session } from "@/utils/data_types/session";

@@ -46,3 +46,7 @@ export interface JobWithProposals {
     updatedAt: Date,
     proposals: Proposal[]
 }
+
+export interface JobsDataOut {
+    totalJobs: number;
+}

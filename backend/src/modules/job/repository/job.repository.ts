@@ -72,7 +72,6 @@ export class JobRepository extends BaseRepository<Job> {
     }
 
     async findAllJobsData(): Promise<JobsData> {
-        const sequelize = this.jobModel.sequelize as Sequelize;
         const totalJobs = await this.jobModel.count();
         const totalCompletedJobs = await this.jobModel.count({ where: { status: StatusJob.COMPLETED } });
 

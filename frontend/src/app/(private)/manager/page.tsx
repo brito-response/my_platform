@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FolderOpenDotIcon, MessageCircleMoreIcon, ShieldIcon, UserCog2Icon } from "lucide-react";
 import { Loader } from "@/components/Shared/Loader";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -9,10 +8,12 @@ import { JobsGrid } from "@/components/JobsGrid";
 import { ProjectsDataOut } from "@/utils/data_types/projects";
 import { ProposalsDataOut } from "@/utils/data_types/proposals";
 import { UsersDataOut } from "@/utils/data_types/users";
+import { FolderOpenDotIcon, MessageCircleMoreIcon, ShieldIcon, UserCog2Icon } from "lucide-react";
+import { JobsDataOut } from "@/utils/data_types/jobs";
 
 async function getProjectsData(): Promise<ProjectsDataOut | null> {
   try {
-    const response = await fetch(`http://localhost:3000/projects/reports`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/reports`, {
       method: "GET",
       cache: "no-store",
       headers: {
@@ -30,7 +31,7 @@ async function getProjectsData(): Promise<ProjectsDataOut | null> {
 
 async function getProposalsData(): Promise<ProposalsDataOut | null> {
   try {
-    const response = await fetch(`http://localhost:3000/proposals/reports`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/proposals/reports`, {
       method: "GET",
       cache: "no-store",
       headers: {
@@ -48,7 +49,7 @@ async function getProposalsData(): Promise<ProposalsDataOut | null> {
 
 async function getusersData(): Promise<UsersDataOut | null> {
   try {
-    const response = await fetch(`http://localhost:3000/users/reports`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/reports`, {
       method: "GET",
       cache: "no-store",
       headers: {
@@ -64,6 +65,24 @@ async function getusersData(): Promise<UsersDataOut | null> {
   }
 }
 
+async function getJobsData(): Promise<JobsDataOut | null> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jobs/reports`, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) return null;
+    const data: JobsDataOut = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching portfolio data:", error);
+    return null;
+  }
+}
+
 export default async function Manager() {
   const isLoading = false;
   const session: Session | null = await getServerSession(authOptions);
@@ -71,6 +90,7 @@ export default async function Manager() {
   const projectData = await getProjectsData();
   const proposalData = await getProposalsData();
   const getUserData = await getusersData();
+  const jobsData = await getJobsData();
 
   if (isLoading) {
     return (<div className="w-full h-full flex justify-center items-center"><Loader /></div>);
@@ -92,14 +112,14 @@ export default async function Manager() {
 
           {/* User */}
           <div className="w-10 h-10 rounded-full overflow-hidden cursor-pointer">
-            <img src={session.user.image ? `http://localhost:3000${session.user.image}` : `http://localhost:3001/default/user.png`} width={40} height={40} alt="user" className="w-full h-full object-cover" />
+            <img src={session.user.image ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${session.user.image}` : `http://localhost:3001/default/user.png`} width={40} height={40} alt="user" className="w-full h-full object-cover" />
           </div>
         </div>
 
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"> {[
           { value: projectData ? projectData.totalProjects : "0", label: "Projetos", icon: <FolderOpenDotIcon size={28} />, link: "/projects" },
-          { value: "5", label: "Tecnologias", icon: <ShieldIcon size={28} />, link: "/" },
+          { value: jobsData ? jobsData.totalJobs : "0", label: "Seus Jobs", icon: <ShieldIcon size={28} />, link: `/jobs/view/${session.user.id}` },
           { value: proposalData ? proposalData.totalProposals : "0", label: "Propostas", icon: <MessageCircleMoreIcon size={28} />, link: "/" },
           { value: getUserData ? getUserData.totalUsers : "0", label: "Usuarios Ativos", icon: <UserCog2Icon size={28} />, link: "/" },
         ].map((card, index) => (
