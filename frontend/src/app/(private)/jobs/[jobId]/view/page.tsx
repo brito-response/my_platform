@@ -1,5 +1,5 @@
 import { Loader } from "@/components/Shared/Loader";
-import { MessageCircleMoreIcon, CalendarDaysIcon, DollarSignIcon } from "lucide-react";
+import { MessageCircleMoreIcon, CalendarDaysIcon, DollarSignIcon, UsersIcon } from "lucide-react";
 import { Session } from "@/utils/data_types/session";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -89,6 +89,14 @@ export default async function ViewJob({ params }: Props) {
                         <span>
                             Propostas:{" "}
                             <strong className="text-gray-800">{job.proposals?.length ?? 0}</strong>
+                        </span>
+                    </div>
+
+                     <div className="flex items-center gap-2">
+                        <UsersIcon size={18} />
+                        <span>
+                            Frellancers:{" "}
+                            <strong className="text-green-800">{job.maxFreelancers ?? 0}</strong>
                         </span>
                     </div>
                 </div>

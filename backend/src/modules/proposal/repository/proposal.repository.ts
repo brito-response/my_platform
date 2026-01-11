@@ -50,12 +50,7 @@ export class ProposalRepository extends BaseRepository<Proposal> {
     }
 
     async findByJobAndUser(jobId: string, userId: string): Promise<Proposal | null> {
-        return this.proposalModel.findOne({
-            where: {
-                jobId,
-                userId,
-            },
-        });
+        return this.proposalModel.findOne({ where: { jobId, userId } });
     }
 
 }

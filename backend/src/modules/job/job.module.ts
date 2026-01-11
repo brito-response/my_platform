@@ -10,7 +10,7 @@ import { ProposalModule } from '../proposal/proposal.module';
 import { JobfrellasModule } from '../jobfrellas/jobfrellas.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Job]), UserModule, forwardRef(() => WalletModule), ProposalModule, JobfrellasModule],
+  imports: [SequelizeModule.forFeature([Job]), UserModule, forwardRef(() => WalletModule), forwardRef(() => ProposalModule), JobfrellasModule],
   controllers: [JobController],
   providers: [JobService, JobRepository],
   exports: [JobService]

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { BaseService } from 'src/common/base/base.service';
 import { Proposal, ProposalStatus } from './entities/proposal.entity';
@@ -7,11 +7,20 @@ import { ApiError } from 'src/common/errors/api.error';
 import { ProposalsData } from './dto/proposal-report.dto';
 import { UpdateProposalDto } from './dto/update-proposal.dto';
 import { Transaction } from 'sequelize';
-import { filter } from 'rxjs';
+import { JobService } from '../job/job.service';
+import { Sequelize } from 'sequelize-typescript';
+import { JobfrellasService } from '../jobfrellas/jobfrellas.service';
+import { JobFrellaStatus } from '../jobfrellas/entities/jobfrella.entity';
 
 @Injectable()
 export class ProposalService extends BaseService<Proposal, CreateProposalDto, UpdateProposalDto> {
-  constructor(private readonly proposalRepository: ProposalRepository) {
+  constructor(private readonly proposalRepository: ProposalRepository,
+    @Inject(forwardRef(() => JobService))
+    private readonly jobService: JobService,
+    private readonly sequelize: Sequelize,
+    @Inject(forwardRef(() => JobfrellasService))
+    private readonly jobFrellasService:JobfrellasService
+  ) {
     super(proposalRepository);
   }
 
@@ -30,13 +39,25 @@ export class ProposalService extends BaseService<Proposal, CreateProposalDto, Up
   }
 
   async acceptProposal(id: string): Promise<Proposal> {
-    const proposal = await this.proposalRepository.findOne(id);
-    if (!proposal) throw new ApiError('Proposal not found', 404);
+    return await this.sequelize.transaction(async (transaction) => {
+      const proposal = await this.proposalRepository.findByIdWithTransaction(id, transaction);
+      if (!proposal) throw new ApiError('Proposal not found', 404);
+      if (proposal.status === ProposalStatus.ACCEPTED) return proposal;
 
-    proposal.status = ProposalStatus.ACCEPTED;
-    await proposal.save();
+      const job = await this.jobService.getByIdWithTransaction(proposal.jobId, transaction);
 
-    return proposal;
+      const acceptedCount = await this.jobService.countAcceptedProposals(proposal.jobId, transaction);
+
+      if (acceptedCount >= job.maxFreelancers) throw new ApiError('you have already accepted the maximum number of proposals for this job.', 400);
+      
+      const amountToReceive = Number((job.budget / job.maxFreelancers).toFixed(2));
+      await this.jobFrellasService.createWithTransaction({ jobId:job.jobId, freelancerId: proposal.userId, proposalId:proposal.proposalId, amountToReceive, status: JobFrellaStatus.APPROVED }, transaction);
+
+      proposal.status = ProposalStatus.ACCEPTED;
+      await proposal.save({ transaction });
+
+      return proposal;
+    });
   }
 
   async getReports(): Promise<ProposalsData> {

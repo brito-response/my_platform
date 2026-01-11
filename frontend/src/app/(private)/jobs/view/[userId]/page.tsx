@@ -5,6 +5,7 @@ import { JobWithProposals } from "@/utils/data_types/jobs";
 import { redirect } from "next/navigation";
 import { InfoLinkProfile } from "@/components/Shared/InfoLinkProfile";
 import { Proposal } from "@/utils/data_types/proposals";
+import { FormButtonAceptProposal } from "@/forms";
 
 async function getAllJobsOfUserByUserId(userId: string, jwt: string): Promise<JobWithProposals[]> {
     try {
@@ -74,10 +75,7 @@ export default async function JobsOfUserView({ params }: Props) {
                                         <InfoLinkProfile userId={proposal.userId} />
 
                                         {!isAccepted && (
-                                            <button className="mt-2 self-end bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                                            // onClick={() => handleAceptProporsal(job.jobId, proposal.proposalId)} 
-                                            >Aceitar proposta
-                                            </button>
+                                            <FormButtonAceptProposal proposalId={proposal.proposalId}/>
                                         )}
                                     </div>
                                 );

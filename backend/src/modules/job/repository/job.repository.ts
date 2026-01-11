@@ -4,7 +4,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Job, JobLevel, StatusJob } from "../entities/job.entity";
 import { Contract } from "src/modules/contract/entities/contract.entity";
 import { col, fn, Op, Sequelize, Transaction } from "sequelize";
-import { Proposal } from "src/modules/proposal/entities/proposal.entity";
+import { Proposal, ProposalStatus } from "src/modules/proposal/entities/proposal.entity";
 import { JobLevelStats, JobsData } from "../dto/job-report.dto";
 
 @Injectable()
@@ -114,6 +114,10 @@ export class JobRepository extends BaseRepository<Job> {
         const job = await this.jobModel.findByPk(jobId);
         if (!job) return null;
         return job.get({ plain: true }) as Partial<Job>;
+    }
+
+    async countAcceptedProposals(jobId: string, transaction: Transaction): Promise<number> {
+        return Proposal.count({ where: { jobId, status: ProposalStatus.ACCEPTED }, transaction });
     }
 
 }
