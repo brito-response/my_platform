@@ -98,6 +98,14 @@ export class JobController {
   }
 
   @ApiBearerAuth('jwt')
+  @Roles('ADMIN', 'CLIENT')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('users/:userId/proposals')
+  async getAllJobOfUserWithProposals(@Param('userId') userId: string) {
+    return await this.jobService.findAllJobsByUserWithProporsal(userId);
+  }
+
+  @ApiBearerAuth('jwt')
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id/proposals/ids')

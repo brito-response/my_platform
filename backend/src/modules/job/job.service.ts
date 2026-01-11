@@ -70,6 +70,10 @@ export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
     return await this.jobRepository.findAllByUser(userId);
   }
 
+  async findAllJobsByUserWithProporsal(userId: string): Promise<Job[]> {
+    return await this.jobRepository.findAllByUserWithProposals(userId);
+  }
+
   async getJobWithAllProposals(jobId: string): Promise<Job> {
     const job = await this.jobRepository.getJobByIdWithAllProposals(jobId);
     if (!job) throw new ApiError("Job with this id not found.", 404)

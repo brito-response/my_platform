@@ -71,6 +71,17 @@ export class JobRepository extends BaseRepository<Job> {
         return job;
     }
 
+    async findAllByUserWithProposals(userId: string): Promise<Job[]> {
+        return this.jobModel.findAll({
+            where: { userId },
+            include: [{
+                model: Proposal,
+                attributes: ['proposalId', 'value', 'deadline', 'status', 'message', 'userId'],
+            },],
+            order: [['createdAt', 'DESC']],
+        });
+    }
+
     async findAllJobsData(): Promise<JobsData> {
         const totalJobs = await this.jobModel.count();
         const totalCompletedJobs = await this.jobModel.count({ where: { status: StatusJob.COMPLETED } });

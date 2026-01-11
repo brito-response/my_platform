@@ -21,7 +21,7 @@ export const LayoutCaptureError: React.FC<LayoutCaptureErrorProps> = ({ children
           toast.error("Token inválido é de 1500 A.C");
           break;
         case "invalid_role":
-          toast.error("Você não é ADMIN major, não pode acessar isso aí não.");
+          toast.error("Você não é um usuario do tipo que pode mecher nisso aí major...");
           break;
         default:
           toast.error("Ocorreu um erro desconhecido.");
