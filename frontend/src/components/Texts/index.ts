@@ -1,3 +1,4 @@
 import { HCustom } from "./HCustom";
+import { PCustom } from "./PCustom";
 
-export { HCustom };
+export { HCustom, PCustom };

@@ -16,7 +16,7 @@ type TypeLoginData = {
 
 export const FormLogin: React.FC = () => {
   const pathname = usePathname();
-  const hiddenPaths = ["/manager", "/portifolios", "/messages", "/projects", "/proposals", "/jobs","/users"];
+  const hiddenPaths = ["/manager", "/portifolios", "/messages", "/projects", "/proposals", "/jobs","/users","/wallets"];
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
