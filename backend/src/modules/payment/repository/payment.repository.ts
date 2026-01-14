@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { BaseRepository } from "src/common/base/base.repository";
 import { InjectModel } from "@nestjs/sequelize";
 import { Payment } from "../entities/payment.entity";
+import { InferCreationAttributes, Transaction } from "sequelize";
 
 @Injectable()
 export class PaymentRepository extends BaseRepository<Payment> {
@@ -20,4 +21,8 @@ export class PaymentRepository extends BaseRepository<Payment> {
             where: { chargeId },
         });
     }
+
+    // async createWithTransaction(data: InferCreationAttributes<Payment>, transaction: Transaction): Promise<Payment> {
+    //     return this.paymentModel.create(data, { transaction });
+    // }
 }

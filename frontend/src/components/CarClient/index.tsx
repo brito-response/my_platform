@@ -6,7 +6,6 @@ import { HCustom } from "../Texts/HCustom";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-
 type CardItemResponse = { payment_token: string; card_mask: string; brand: string; };
 type CarClientProps = { addValue: number };
 export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
@@ -47,7 +46,7 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
     const handleCheckout = async () => {
         let paymentToken = null;
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/cars`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/credits`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ walletId: 1, value: addValue }),
@@ -92,7 +91,7 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
             }
 
             else if (paymentMethod === "boleto") {
-
+                // pass
             }
             else { toast.warn("método de pagamento não selecionado.") }
         } catch {
@@ -124,7 +123,7 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
             {paymentMethod === "card" && (
                 <div className="mt-8">
 
-                    {/* CARTÃO BONITO */}
+                    {/* CARTÃO */}
                     <div className="w-full flex justify-center mb-6">
                         <div className="relative w-80 h-48 perspective">
                             <div className={`relative w-full h-full rounded-2xl shadow-xl transition-transform duration-700 ${isCvvFocused ? "rotate-y-180" : ""}`} style={{ transformStyle: "preserve-3d" }}>
@@ -190,7 +189,7 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
                         </div>
                     </div>
 
-                    {/* 🔥 PARCELAMENTO */}
+                    {/* PARCELAMENTO */}
                     <div className="mt-6">
                         <label className="text-sm font-medium text-gray-700">Parcelamento</label>
                         <select value={installmentsSelected} onChange={(e) => setInstallmentsSelected(Number(e.target.value))} className="w-full mt-1 p-3 border rounded-lg focus:outline-blue-600">
@@ -238,13 +237,11 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
                                 className="w-full p-3 border rounded-lg resize-none text-sm focus:outline-none"
                             />
 
-                            <button
-                                onClick={() => {
+                            <button onClick={() => {
                                     navigator.clipboard.writeText(pixCopyPaste);
                                     toast.success("Código PIX copiado!");
                                 }}
-                                className="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-                            >
+                                className="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
                                 Copiar
                             </button>
                         </div>
@@ -256,7 +253,6 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
 
                 </div>
             )}
-
 
             <button onClick={handleCheckout} className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">
                 Finalizar Pedido

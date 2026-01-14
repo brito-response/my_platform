@@ -1,89 +1,80 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { EfiWebhookEvent } from './utils/efi-event.enum';
-import { EfiWebhookDto } from './dto/efi-webhook.dto';
-import { ApiError } from 'src/common/errors/api.error';
-import { PaymentRepository } from './repository/payment.repository';
-import { TransactionStatus } from './entities/payment.entity';
+import { Injectable, Logger } from "@nestjs/common";
+import { EfiWebhookDto } from "./dto/efi-webhook.dto";
+import { TransactionStatus } from "./entities/payment.entity";
+import { PaymentRepository } from "./repository/payment.repository";
+import { EfiWebhookEvent } from "./utils/efi-event.enum";
 
 @Injectable()
 export class EfiWebhookService {
-
     private readonly logger = new Logger(EfiWebhookService.name);
 
-    constructor(
-        private readonly paymentRepository: PaymentRepository,
-    ) { }
+    constructor(private readonly paymentRepository: PaymentRepository) { }
 
     async handleEfiWebhook(payload: EfiWebhookDto): Promise<void> {
         this.logger.log(`Evento recebido: ${payload.evento}`);
+        try {
+            switch (payload.evento) {
+                case EfiWebhookEvent.PIX_CONFIRMADO: {
+                    const txid = payload.data?.txid;
+                    if (!txid) {
+                        this.logger.warn('TXID não informado');
+                        break;
+                    }
 
-        switch (payload.evento) {
+                    await this.updateByTxId(TransactionStatus.APPROVED, txid);
+                    break;
+                }
+                case EfiWebhookEvent.CARTAO_APROVADO: {
+                    const chargeId = payload.data?.charge_id;
+                    if (!chargeId) {
+                        this.logger.warn('charge_id não informado');
+                        break;
+                    }
 
-            /** PIX */
-            case EfiWebhookEvent.PIX_CONFIRMADO:
-                await this.handlePixConfirmed(payload);
-                break;
+                    await this.updateByChargeId(TransactionStatus.APPROVED, chargeId);
+                    break;
+                }
+                case EfiWebhookEvent.CARTAO_RECUSADO: {
+                    const chargeId = payload.data?.charge_id;
+                    if (!chargeId) {
+                        this.logger.warn('charge_id não informado');
+                        break;
+                    }
 
-            /** BOLETO */
-            case EfiWebhookEvent.BOLETO_PAGO:
-                await this.handleBoletoPaid(payload);
-                break;
-
-            /** CARTÃO */
-            case EfiWebhookEvent.CARTAO_APROVADO:
-                await this.handleCreditCardApproved(payload);
-                break;
-
-            case EfiWebhookEvent.CARTAO_RECUSADO:
-                await this.handleCreditCardRefused(payload);
-                break;
-
-            default:
-                this.logger.warn(`Evento não tratado: ${payload.evento}`);
+                    await this.updateByChargeId(TransactionStatus.REJECTED, chargeId);
+                    break;
+                }
+                default:
+                    this.logger.warn(`Evento não tratado: ${payload.evento}`);
+            }
+        } catch (error) {
+            this.logger.error('Erro interno ao processar webhook EFI',error instanceof Error ? error.stack : String(error));
         }
     }
 
-    private async handlePixConfirmed(payload: EfiWebhookDto) {
-        const txid = payload.data.txid;
-        if (!txid) throw new ApiError('TXID não informado', 400);
+
+    private async updateByTxId(status: TransactionStatus, txid?: string) {
+        if (!txid) {
+            this.logger.warn('TXID não informado');
+            return;
+        }
 
         const payment = await this.paymentRepository.findByTxId(txid);
         if (!payment) return;
 
-        payment.transaction_status = TransactionStatus.PENDING;
+        if (payment.transaction_status === status) return;
+
+        payment.transaction_status = status;
         await payment.save();
     }
 
-    private async handleBoletoPaid(payload: EfiWebhookDto) {
-        const chargeId = payload.data.charge_id;
-        if (!chargeId) return;
 
+    private async updateByChargeId(status: TransactionStatus, chargeId: string) {
         const payment = await this.paymentRepository.findByChargeId(chargeId);
         if (!payment) return;
+        if (payment.transaction_status === status) return;
 
-        payment.transaction_status = TransactionStatus.PENDING;
-        await payment.save();
-    }
-
-    private async handleCreditCardApproved(payload: EfiWebhookDto) {
-        const chargeId = payload.data.charge_id;
-        if (!chargeId) return;
-
-        const payment = await this.paymentRepository.findByChargeId(chargeId);
-        if (!payment) return;
-
-        payment.transaction_status = TransactionStatus.PENDING;
-        await payment.save();
-    }
-
-    private async handleCreditCardRefused(payload: EfiWebhookDto) {
-        const chargeId = payload.data.charge_id;
-        if (!chargeId) return;
-
-        const payment = await this.paymentRepository.findByChargeId(chargeId);
-        if (!payment) return;
-
-        payment.transaction_status = TransactionStatus.PENDING;
+        payment.transaction_status = status;
         await payment.save();
     }
 }

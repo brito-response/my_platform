@@ -64,9 +64,6 @@ export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job
   @BelongsTo(() => User)
   declare user?: User;
 
-  @HasOne(() => Payment)
-  declare payment?: Payment;
-
   @BelongsToMany(() => Category, () => JobCategory)
   declare categories?: Category[];
 

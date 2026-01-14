@@ -6,10 +6,13 @@ import { Payment } from './entities/payment.entity';
 import { PaymentRepository } from './repository/payment.repository';
 import { EfiWebhookController } from './webhook.controller';
 import { EfiWebhookService } from './efiwebhook.service';
+import { WalletModule } from '../wallet/wallet.module';
+import { EfiService } from './efi.service';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Payment])],
+  imports: [SequelizeModule.forFeature([Payment]), WalletModule, UserModule],
   controllers: [PaymentController, EfiWebhookController],
-  providers: [PaymentService, EfiWebhookService, PaymentRepository],
+  providers: [PaymentService, EfiService, EfiWebhookService, PaymentRepository],
 })
 export class PaymentModule { }

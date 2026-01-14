@@ -1,15 +1,23 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { EfiWebhookService } from './efiwebhook.service';
+import { EfiWebhookDto } from './dto/efi-webhook.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 
 @Controller('payments')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) { }
+  constructor(private readonly paymentService: PaymentService, private readonly efiWebhookService: EfiWebhookService) { }
 
-  @Post()
-  async create(@Body() createPaymentDto: CreatePaymentDto) {
-    return await this.paymentService.create(createPaymentDto);
+  @Post(':id/credits')
+  async createCredit(@Param('id') userIdLogado: string, @Body() dto: CreatePaymentDto) {
+    return this.paymentService.createCreditPayment(userIdLogado, dto);
+  }
+
+   @Post('webhook/efi')
+  async handleWebhook(@Body() payload: EfiWebhookDto) {
+    await this.efiWebhookService.handleEfiWebhook(payload);
+    return { ok: true };
   }
 
   @Get()

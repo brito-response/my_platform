@@ -1,7 +1,6 @@
 import type { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { User } from "src/modules/user/entities/user.entity";
-import { Job } from "src/modules/job/entities/job.entity";
 
 export enum TransactionStatus {
     PENDING = "PENDING",
@@ -10,7 +9,7 @@ export enum TransactionStatus {
 }
 
 @Table({ tableName: "tb_payments", timestamps: true })
-export class Payment extends Model<InferAttributes<Payment>, InferCreationAttributes<Payment>> {
+export class Payment extends Model<InferAttributes<Payment>, InferCreationAttributes<Payment, { omit: | 'paymentId' | 'code' | 'datePayment' | 'paymentsMonths' }>> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column({ type: DataType.UUID })
@@ -21,7 +20,7 @@ export class Payment extends Model<InferAttributes<Payment>, InferCreationAttrib
 
     @Column({ type: DataType.STRING(50), allowNull: false })
     declare method: string;
-    
+
     @Column({ type: DataType.ENUM(...Object.values(TransactionStatus)), allowNull: false, defaultValue: TransactionStatus.PENDING, })
     declare transaction_status: TransactionStatus;
 
@@ -52,7 +51,6 @@ export class Payment extends Model<InferAttributes<Payment>, InferCreationAttrib
     @Column(DataType.DATE)
     declare datePayment: CreationOptional<Date>;
 
-
     //relationships
     @ForeignKey(() => User)
     @Column(DataType.UUID)
@@ -60,11 +58,4 @@ export class Payment extends Model<InferAttributes<Payment>, InferCreationAttrib
 
     @BelongsTo(() => User)
     declare user?: User;
-
-    @ForeignKey(() => Job)
-    @Column(DataType.UUID)
-    declare jobId: string;
-
-    @BelongsTo(() => Job)
-    declare job?: Job;
 }
