@@ -1,84 +1,18 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Minus, Trash2, ShoppingBasket, CreditCard, QrCode } from "lucide-react";
+import { CreditCard, QrCode } from "lucide-react";
 import { HCustom } from "../Texts/HCustom";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { PCustom } from "../Texts";
-import { ButtonInOrdecrement } from "../Buttons";
 
-export interface Product {
-    productId: string;
-    name: string;
-    material: string;
-    price: number;
-    quantStock: number;
-    onSale: boolean | null;
-    discountpercentage: number | null;
-    image: string | null;
-    description: string;
-    finalPrice: number | null;
-    isValidated: boolean;
-    userId: string | null;
-    createdAt: Date;   // ou Date, caso você queira converter
-    updatedAt: Date;   // ou Date
-}
-export enum TypeOrigin { CAR = 'CAR', PEDIDO = 'PEDIDO' };
-type ItemWithProduct = {
-    itemId: string,
-    sizeVariation: string,
-    typeOrigin: TypeOrigin,
-    quantProduct: number,
-    price: number,
-    subtotal: number | null,
-    carId: string,
-    orderId: string | null,
-    productId: string,
-    createdAt: Date,
-    updatedAt: Date,
-    product: Product;
-};
-enum OrderStatus {
-    PENDING_PAYMENT = "PENDING_PAYMENT",
-    DESIRING_PAYMENT = "DESIRING_PAYMENT",
-    INPHASE_PAYMENT = "INPHASE_PAYMENT",
-    PAID = "PAID", PROCESSING = "PROCESSING", DESIRING_REIMBURSEMENT = "DESIRING_REIMBURSEMENT", PENDING_REIMBURSEMENT = "PENDING_REIMBURSEMENT",
-    REIMBURSEMENT = "REIMBURSEMENT", CANCELED = "CANCELED"
-};
-type Order = {
-    orderId: string;
-    name: string;
-    status: OrderStatus;
-    methodPayment: PaymentMethod;
-    value: number;
-    numberOfInstallments: number;
-    paymentsMonths: boolean[];
-    code: string;
-    datePayment: Date;
-    createdAt: Date;   // ou Date, caso você queira converter
-    updatedAt: Date;   // ou Date
-};
-interface OrderPaymentBackRequest {
-    methodPayment: PaymentMethod;
-    creditCardToken?: string;
-    numberOfInstallments: number;
-    addressId: string;
-    userId: string;
-};
 
-interface OrderPaymentFrontRequest extends Omit<OrderPaymentBackRequest, "userId"> {
-    orderId: string;
-};
-enum PaymentMethod { PIX = "PIX", CREDIT_CARD = "CREDIT_CARD", BOLETO = "BOLETO" };
-
-type CarClientProps = { carItems: ItemWithProduct[] };
 type CardItemResponse = { payment_token: string; card_mask: string; brand: string; };
-
-export const CarClient: React.FC<CarClientProps> = ({ carItems }) => {
+type CarClientProps = { addValue: number };
+export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
     const router = useRouter();
-    const [items, setItems] = useState<ItemWithProduct[]>(carItems);
     const [paymentMethod, setPaymentMethod] = useState<"card" | "pix" | "boleto">("card");
+
     const [cardNumber, setCardNumber] = useState("");
     const [cardName, setCardName] = useState("");
     const [cardExp, setCardExp] = useState("");
@@ -88,19 +22,14 @@ export const CarClient: React.FC<CarClientProps> = ({ carItems }) => {
     const [pixQrCodeUrl, setPixQrCodeUrl] = useState<string>("imagem/default");
     const [pixCopyPaste, setPixCopyPaste] = useState<string>("");
 
-    const increase = (id: string) => { setItems((prev) => prev.map((item) => item.itemId === id ? { ...item, quantProduct: item.quantProduct + 1 } : item)); };
-    const decrease = (id: string) => { setItems((prev) => prev.map((item) => item.itemId === id ? { ...item, quantProduct: Math.max(1, item.quantProduct - 1) } : item)); };
-    const remove = (id: string) => { setItems((prev) => prev.filter((item) => item.itemId !== id)); };
-    const total = useMemo(() => items.reduce((sum, p) => sum + p.price * p.quantProduct, 0), [items]);
-
     const installments = useMemo(() => {
         const max = 12;
         const list = [];
         for (let i = 1; i <= max; i++) {
-            list.push({ quantity: i, value: total / i });
+            list.push({ quantity: i, value: addValue / i });
         }
         return list;
-    }, [total]);
+    }, [addValue]);
 
     function detectCardBrand(cardNumber: string): "visa" | "mastercard" | "amex" | "elo" | "hipercard" | "discover" | "diners" | null {
         const number = cardNumber.replace(/\D/g, "");
@@ -118,12 +47,12 @@ export const CarClient: React.FC<CarClientProps> = ({ carItems }) => {
     const handleCheckout = async () => {
         let paymentToken = null;
         try {
-            const response = await fetch(`http://localhost:3001/api/cars`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/cars`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ carId: items[0].carId }),
+                body: JSON.stringify({ walletId: 1, value: addValue }),
             });
-            const order: Order = await response.json();
+            const order = await response.json();
 
             if (paymentMethod === "card") {
                 // @ts-ignore
@@ -137,10 +66,10 @@ export const CarClient: React.FC<CarClientProps> = ({ carItems }) => {
                 }
                 paymentToken = result.payment_token;
 
-                const res = await fetch(`http://localhost:3001/api/orders`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/orders`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ orderId: order.orderId, methodPayment: PaymentMethod.CREDIT_CARD, creditCardToken: "", numberOfInstallments: installmentsSelected, addressId: "" } as OrderPaymentFrontRequest),
+                    body: JSON.stringify({}),
                 });
 
                 if (res.ok) {
@@ -151,10 +80,10 @@ export const CarClient: React.FC<CarClientProps> = ({ carItems }) => {
             }
 
             else if (paymentMethod === "pix") {
-                const res = await fetch(`http://localhost:3001/api/orders`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/orders`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ orderId: order.orderId, methodPayment: PaymentMethod.PIX, creditCardToken: "", numberOfInstallments: installmentsSelected, addressId: "" } as OrderPaymentFrontRequest),
+                    body: JSON.stringify({ }),
                 });
                 if (res.ok) {
                     toast.success("Pedido realizado com sucesso!");
@@ -176,18 +105,19 @@ export const CarClient: React.FC<CarClientProps> = ({ carItems }) => {
             <HCustom level={5} className="my-5">Resumo</HCustom>
             <div className="text-(--text-color) flex justify-between text-lg font-semibold mb-6">
                 <span>Total:</span>
-                <span className="text-blue-600">R$ {total.toFixed(2)}</span>
+                <span className="text-blue-600">R$ {addValue.toFixed(2)}</span>
             </div>
             <HCustom level={6} className="my-5">Forma de pagamento</HCustom>
             <div className="space-y-3">
-                {[
-                    { id: "card", label: "Cartão de Crédito", icon: <CreditCard /> },
-                    { id: "pix", label: "QR Code Pix", icon: <QrCode /> }
-                ].map((method) => (
-                    <button key={method.id} onClick={() => setPaymentMethod(method.id as any)} className={`w-full text-(--text-color) flex items-center gap-3 p-3 rounded-lg border transition ${paymentMethod === method.id ? "border-blue-600 bg-blue-400" : "border-gray-300 hover:bg-gray-100"}`}>
-                        {method.icon} {method.label}
-                    </button>
-                ))}
+                {
+                    [
+                        { id: "card", label: "Cartão de Crédito", icon: <CreditCard /> },
+                        { id: "pix", label: "QR Code Pix", icon: <QrCode /> }
+                    ].map((method) => (
+                        <button key={method.id} onClick={() => setPaymentMethod(method.id as any)} className={`w-full text-(--text-color) flex items-center gap-3 p-3 rounded-lg border transition ${paymentMethod === method.id ? "border-blue-600 bg-blue-400" : "border-gray-300 hover:bg-gray-100"}`}>
+                            {method.icon} {method.label}
+                        </button>
+                    ))}
             </div>
 
             {/* FORM CARTÃO */}
