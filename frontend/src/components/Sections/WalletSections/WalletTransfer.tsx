@@ -8,7 +8,7 @@ export const WalletTransfer = ({ wallet }: { wallet: Wallet }) => {
 
   return (
     <div className="animate-fade-in bg-gray-50 p-4 rounded-xl">
-      <h3 className="font-semibold mb-3">Transferir saldo</h3>
+      <h3 className="font-semibold mb-3">transferir saldo</h3>
 
       <input placeholder="CPF do destinatário" value={cpf} onChange={(e) => setCpf(e.target.value)} className="input"/>
 

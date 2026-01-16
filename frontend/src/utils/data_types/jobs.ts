@@ -24,6 +24,7 @@ export interface JobOutput {
     maxFreelancers: number;
     budget: number;
     deadline: Date;
+    linkProject: string;
     status: StatusJob;
     linksReferences: string[];
     userId: string;
@@ -39,6 +40,7 @@ export interface JobWithProposals {
     maxFreelancers: number;
     budget: number;
     deadline: Date;
+    linkProject: string;
     status: StatusJob;
     linksReferences: string[];
     userId: string;

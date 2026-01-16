@@ -41,13 +41,16 @@ export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job
   declare level: JobLevel;
 
   @Column(DataType.INTEGER)
-  declare maxFreelancers:number;
+  declare maxFreelancers: number;
 
   @Column(DataType.FLOAT)
   declare budget: number; // orçamento
 
   @Column(DataType.DATE)
   declare deadline: Date; // prazo final
+
+  @Column(DataType.TEXT)
+  declare linkProject: CreationOptional<string>;
 
   @Column(DataType.ENUM(...Object.values(StatusJob)))
   declare status: StatusJob;

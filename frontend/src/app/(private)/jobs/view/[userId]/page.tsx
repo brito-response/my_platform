@@ -51,6 +51,12 @@ export default async function JobsOfUserView({ params }: Props) {
                             <h2 className="text-lg font-semibold">{job.title}</h2>
                             <p className="text-sm text-gray-500">Orçamento: <strong>R$ {job.budget}</strong> • Prazo:{" "} {new Date(job.deadline).toLocaleDateString()}</p>
                             <p className="text-sm text-gray-500">Propostas recebidas: {job.proposals?.length ?? 0}</p>
+                            <p className="text-sm text-gray-500">Link de produção:
+                                <a href={job.linkProject ?? '#link'} target="_blank" rel="noopener noreferrer" className="text-blue-600 px-4 underline hover:text-blue-800 transition-colors">
+                                    {job.linkProject ?? '#link'}
+                                </a>
+                            </p>
+
                         </div>
 
                         {/* LISTA DE PROPOSTAS */}
@@ -75,7 +81,7 @@ export default async function JobsOfUserView({ params }: Props) {
                                         <InfoLinkProfile userId={proposal.userId} />
 
                                         {!isAccepted && (
-                                            <FormButtonAceptProposal proposalId={proposal.proposalId}/>
+                                            <FormButtonAceptProposal proposalId={proposal.proposalId} />
                                         )}
                                     </div>
                                 );
