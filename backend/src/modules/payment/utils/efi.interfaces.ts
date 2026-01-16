@@ -11,4 +11,12 @@ interface Customer {
     phone_number: string;
 }
 
-export type {Customer, ChargeItem };
+interface PaymentResponse {
+    paymentId:string;
+    type: 'pix' | 'card';
+    status: 'approved';
+    qrCodeImage?: string;
+    copyPaste?: string;
+}
+
+export type { Customer, ChargeItem, PaymentResponse };

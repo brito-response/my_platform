@@ -1,23 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { EfiWebhookService } from './efiwebhook.service';
-import { EfiWebhookDto } from './dto/efi-webhook.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { Roles } from '../user/utils/decorators/roles.decorator';
+import { JwtAuthGuard } from '../user/utils/guards/jwt.guard';
+import { RolesGuard } from '../user/utils/guards/roles.guard';
 
 @Controller('payments')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService, private readonly efiWebhookService: EfiWebhookService) { }
+  constructor(private readonly paymentService: PaymentService) { }
 
-  @Post(':id/credits')
-  async createCredit(@Param('id') userIdLogado: string, @Body() dto: CreatePaymentDto) {
-    return this.paymentService.createCreditPayment(userIdLogado, dto);
+  @ApiBearerAuth('jwt')
+  @Roles('ADMIN', 'CLIENT', 'FREELANCER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get(':id/verify')
+  async confirPayment(@Param('id') paymentId: string) {
+    return this.paymentService.confirmPayment(paymentId);
   }
 
-   @Post('webhook/efi')
-  async handleWebhook(@Body() payload: EfiWebhookDto) {
-    await this.efiWebhookService.handleEfiWebhook(payload);
-    return { ok: true };
+  @ApiBearerAuth('jwt')
+  @Roles('ADMIN', 'CLIENT', 'FREELANCER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post(':id/credits')
+  async createCredit(@Param('id') userIdLogado: string, @Body() dto: CreatePaymentDto) {
+    return await this.paymentService.createCreditPayment(userIdLogado, dto);
   }
 
   @Get()

@@ -6,7 +6,13 @@ export enum TransactionStatus {
     PENDING = "PENDING",
     APPROVED = "APPROVED",
     REJECTED = "REJECTED",
-}
+};
+
+export enum PaymentMethod {
+    CARD = "card",
+    PIX = "pix",
+    BOLETO = "boleto",
+};
 
 @Table({ tableName: "tb_payments", timestamps: true })
 export class Payment extends Model<InferAttributes<Payment>, InferCreationAttributes<Payment, { omit: | 'paymentId' | 'code' | 'datePayment' | 'paymentsMonths' }>> {
@@ -18,8 +24,8 @@ export class Payment extends Model<InferAttributes<Payment>, InferCreationAttrib
     @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
     declare amount: number;
 
-    @Column({ type: DataType.STRING(50), allowNull: false })
-    declare method: string;
+    @Column({ type: DataType.ENUM(...Object.values(PaymentMethod)), allowNull: true, defaultValue: null })
+    declare method: PaymentMethod;
 
     @Column({ type: DataType.ENUM(...Object.values(TransactionStatus)), allowNull: false, defaultValue: TransactionStatus.PENDING, })
     declare transaction_status: TransactionStatus;

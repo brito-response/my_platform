@@ -13,7 +13,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const user = decoderTokenToClaims(jwt);
         if (user) {
             const objectMounted: JobInput = { ...body, userId: user.id };
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jobs`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/payments/${user.id}/credits`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${jwt}`,
@@ -29,32 +29,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ message: "Unauthorized error." }, { status: response.status });
         }
         return NextResponse.json({ message: "The request conatin error" }, { status: 400 });
-    } catch (error) {
-        throw new Error("Erro ao conectar no backend.");
-    }
-}
-
-export async function GET(req: NextRequest): Promise<NextResponse> {
-    try {
-        const cookieStore = cookies();
-        const token = (await cookieStore).get("jwt_back");
-        const jwt = token?.value ?? "not found";
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jobs`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${jwt}`,
-                "Content-Type": "application/json",
-            },
-        });
-        
-        const contentType = response.headers.get("Content-Type");
-        if (contentType && contentType.includes("application/json") && response.status === 200) {
-            const jobs = await response.json();
-            return NextResponse.json(jobs, { status: 200 });
-        }
-
-        return NextResponse.json({ message: "The request contains errors, such as invalid data, incorrect format, or missing required fields." }, { status: 400 });
     } catch (error) {
         throw new Error("Erro ao conectar no backend.");
     }

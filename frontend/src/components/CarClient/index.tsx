@@ -5,12 +5,13 @@ import { CreditCard, QrCode } from "lucide-react";
 import { HCustom } from "../Texts/HCustom";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { EfiWebhookInput, PaymentInput, PaymentMethod, PaymentOut } from "@/utils/data_types/payment";
 
 type CardItemResponse = { payment_token: string; card_mask: string; brand: string; };
 type CarClientProps = { addValue: number };
 export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
     const router = useRouter();
-    const [paymentMethod, setPaymentMethod] = useState<"card" | "pix" | "boleto">("card");
+    const [paymentMethod, setPaymentMethod] = useState<"card" | "pix">("card");
 
     const [cardNumber, setCardNumber] = useState("");
     const [cardName, setCardName] = useState("");
@@ -32,7 +33,6 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
 
     function detectCardBrand(cardNumber: string): "visa" | "mastercard" | "amex" | "elo" | "hipercard" | "discover" | "diners" | null {
         const number = cardNumber.replace(/\D/g, "");
-
         if (/^4/.test(number)) return "visa";
         if (/^5[1-5]/.test(number) || /^2(2[2-9]|[3-6]|7[01])/.test(number)) return "mastercard";
         if (/^3[47]/.test(number)) return "amex";
@@ -43,58 +43,64 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
         return null;
     }
 
-    const handleCheckout = async () => {
-        let paymentToken = null;
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/credits`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ walletId: 1, value: addValue }),
-            });
-            const order = await response.json();
+    const handleFetchCreateCreditPayment = async (payment: PaymentInput): Promise<PaymentOut | null> => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/credits`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payment),
+        });
 
+        if (!res.ok) {
+            toast.error("Erro ao realizar o pedido");
+            return null;
+        }
+        return await res.json();
+    };
+
+    const handleFetchVerifyCredits = async (paymentId: string): Promise<boolean> => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/credits/verify`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentId }),
+        });
+        if (!res.ok) toast.error("Erro ao realizar o pedido");
+        return await res.json();
+    };
+
+    const handleCheckout = async () => {
+        try {
+            let payment: PaymentInput;
             if (paymentMethod === "card") {
                 // @ts-ignore
-                const checkout = new window.EfiCheckout({ sandbox: true }); // false em produção
+                const checkout = new window.EfiCheckout({ sandbox: true });
                 const [month, year] = cardExp.split("/");
 
-                const result: CardItemResponse = await checkout.createPaymentToken({ brand: detectCardBrand(cardNumber) ?? "undefined brand", number: cardNumber.replace(/\s/g, ""), cvv: cardCvv, expiration_month: month, expiration_year: `20${year}`, holder_name: cardName });
-                if (!result?.payment_token) {
-                    toast.error("Erro ao gerar token do cartão");
-                    return;
-                }
-                paymentToken = result.payment_token;
+                const result: CardItemResponse = await checkout.createPaymentToken({ brand: detectCardBrand(cardNumber) ?? "undefined", number: cardNumber.replace(/\s/g, ""), cvv: cardCvv, expiration_month: month, expiration_year: `20${year}`, holder_name: cardName });
+                if (!result?.payment_token) { toast.error("Erro ao gerar token do cartão"); return; };
 
-                const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/orders`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({}),
-                });
+                payment = { value: addValue, method: PaymentMethod.CARD, paymentToken: result.payment_token, numberOfInstallments: installmentsSelected };
 
-                if (res.ok) {
-                    toast.success("Pedido realizado com sucesso!");
-                    router.push("/manager");
-                }
-                else toast.error("Erro ao realizar o pedido");
+            } else if (paymentMethod === "pix") {
+                payment = { value: addValue, method: PaymentMethod.PIX };
+
+            } else {
+                toast.warn("Método de pagamento não selecionado.");
+                return;
             }
 
-            else if (paymentMethod === "pix") {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/orders`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ }),
-                });
-                if (res.ok) {
-                    toast.success("Pedido realizado com sucesso!");
+            const pay = await handleFetchCreateCreditPayment(payment);
+            if (pay) {
+                pay.qrCodeImage ? setPixQrCodeUrl : "";
+                pay.copyPaste ? setPixCopyPaste : "";
+                const pago = await handleFetchVerifyCredits(pay.paymentId);
+                if (pago) {
+                    toast.success("Credito com sucesso!");
                     router.push("/manager");
                 }
             }
 
-            else if (paymentMethod === "boleto") {
-                // pass
-            }
-            else { toast.warn("método de pagamento não selecionado.") }
-        } catch {
+        } catch (error) {
+            console.error(error);
             toast.error("Erro ao realizar o pedido.");
         }
     };
@@ -225,22 +231,15 @@ export const CarClient: React.FC<CarClientProps> = ({ addValue }) => {
 
                     {/* COPIA E COLA */}
                     <div>
-                        <label className="text-sm font-medium text-gray-700">
-                            PIX copia e cola
-                        </label>
+                        <label className="text-sm font-medium text-gray-700">PIX copia e cola</label>
 
                         <div className="flex gap-2 mt-1">
-                            <textarea
-                                readOnly
-                                value={pixCopyPaste}
-                                rows={3}
-                                className="w-full p-3 border rounded-lg resize-none text-sm focus:outline-none"
-                            />
+                            <textarea readOnly value={pixCopyPaste} rows={3} className="w-full p-3 border rounded-lg resize-none text-sm focus:outline-none" />
 
                             <button onClick={() => {
-                                    navigator.clipboard.writeText(pixCopyPaste);
-                                    toast.success("Código PIX copiado!");
-                                }}
+                                navigator.clipboard.writeText(pixCopyPaste);
+                                toast.success("Código PIX copiado!");
+                            }}
                                 className="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
                                 Copiar
                             </button>
