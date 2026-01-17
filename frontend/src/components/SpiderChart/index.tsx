@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import { useEffect, useState } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 
 interface SpiderChartProps {
@@ -9,9 +10,17 @@ interface SpiderChartProps {
 }
 
 export const SpiderChart: React.FC<SpiderChartProps> = ({ data, color = "#3b82f6", maxValue = 100 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="w-full h-[300px]">
-      <ResponsiveContainer width="100%" aspect={1}>
+      <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data}>
           <PolarGrid stroke="#e5e7eb" />
           <PolarAngleAxis dataKey="linguagem" tick={{ fill: "#000", fontSize: 12 }} />

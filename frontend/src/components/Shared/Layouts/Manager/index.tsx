@@ -18,7 +18,7 @@ export const ManagerLayout: React.FC<ManagerLayoutProps> = ({ children }) => {
   const { menuActive } = useMenu();
 
   return (
-    <div className={clsx(styles.layout)} style={{ ["--aside-width" as any]: menuActive ? "80px" : "220px" }}>
+    <div className={clsx(styles.layout)} style={{ ["--aside-width" as any]: menuActive ? "60px" : "220px" }}>
       <header className={clsx(styles.header)}>{header}</header>
       <div className={clsx(styles.toastify)}>{toastify}</div>
 

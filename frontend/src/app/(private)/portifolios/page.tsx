@@ -2,6 +2,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Banner } from "@/components/Banner";
 import { FooterProjects } from "@/components/FooterProjects";
 import { SpiderChart } from "@/components/SpiderChart";
+import { getDefaultLanguages } from "@/utils/actions/github";
+import { GithubRepo, PortfolioData } from "@/utils/data_types/git";
 import { Portfolio } from "@/utils/data_types/portifolios";
 import { Session } from "@/utils/data_types/session";
 import { MapPin, Briefcase, GraduationCap, SquarePenIcon } from "lucide-react";
@@ -9,45 +11,13 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-type GithubRepo = {
-    id: number;
-    name: string;
-    full_name: string;
-    private: boolean;
-    fork: boolean;
-    html_url: string;
-    description: string | null;
-    created_at: string;
-    updated_at: string;
-    pushed_at: string;
-    language: string | null;
-    languages_url: string;
-    stargazers_count: number;
-    watchers_count: number;
-    forks_count: number;
-    owner: {
-        login: string;
-        id: number;
-        avatar_url: string;
-        html_url: string;
-    };
-};
-
-export type PortfolioData = {
-    linguagem: string;
-    porcentagem: number;
-};
 
 export async function getPortfolioData(username: string): Promise<PortfolioData[]> {
     try {
-        const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-        const headers: Record<string, string> = { "User-Agent": "NextApp", Authorization: `token ${GITHUB_TOKEN}`, };
-
-        // Busca os repositórios do usuário
+        const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+        const headers: Record<string, string> = { "User-Agent": "NextApp", Authorization: `token ${GITHUB_TOKEN}` };
         const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`, { method: "GET", headers, cache: "no-store" });
-
         if (!response.ok) return getDefaultLanguages();
-
         const repositorios = await response.json();
         if (!Array.isArray(repositorios)) return getDefaultLanguages();
 
@@ -66,8 +36,7 @@ export async function getPortfolioData(username: string): Promise<PortfolioData[
         for (const result of settled) {
             if (result.status === "fulfilled" && typeof result.value === "object") {
                 for (const [linguagem, bytes] of Object.entries(result.value)) {
-                    linguagemTotal[linguagem] =
-                        (linguagemTotal[linguagem] || 0) + (bytes as number);
+                    linguagemTotal[linguagem] = (linguagemTotal[linguagem] || 0) + (bytes as number);
                 }
             }
         }
@@ -77,7 +46,6 @@ export async function getPortfolioData(username: string): Promise<PortfolioData[
 
         // Calcula porcentagem
         const resultado: PortfolioData[] = Object.entries(linguagemTotal).map(([linguagem, bytes]) => ({ linguagem, porcentagem: parseFloat(((bytes / totalBytes) * 100).toFixed(2)) }));
-
         // Ordena do maior para o menor
         resultado.sort((a, b) => b.porcentagem - a.porcentagem);
 
@@ -86,10 +54,6 @@ export async function getPortfolioData(username: string): Promise<PortfolioData[
         console.error("Erro ao buscar dados do GitHub:", err);
         return getDefaultLanguages();
     }
-};
-
-function getDefaultLanguages(): PortfolioData[] {
-    return [{ linguagem: "Cobol", porcentagem: 0 }, { linguagem: "TypeScript", porcentagem: 0 }, { linguagem: "Python", porcentagem: 0 }, { linguagem: "Java", porcentagem: 0 }, { linguagem: "C#", porcentagem: 0 }];
 };
 
 async function getPortifolioOfUser(userId: string, token: string): Promise<Portfolio | null> {
@@ -119,7 +83,7 @@ export default async function Portifolio() {
 
     let linguagens: PortfolioData[] = [];
     try {
-        linguagens = await getPortfolioData("tacianosilva");
+        linguagens = await getPortfolioData(portifolio ? portifolio.githubUsername : "");
     } catch (err) {
         console.error("Erro ao obter PortfolioData:", err);
         linguagens = [];

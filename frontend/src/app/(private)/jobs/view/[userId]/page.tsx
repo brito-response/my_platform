@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { InfoLinkProfile } from "@/components/Shared/InfoLinkProfile";
 import { Proposal } from "@/utils/data_types/proposals";
 import { FormButtonAceptProposal } from "@/forms";
+import { JobCharts } from "@/components/JobCharts";
 
 async function getAllJobsOfUserByUserId(userId: string, jwt: string): Promise<JobWithProposals[]> {
     try {
@@ -25,8 +26,8 @@ async function getAllJobsOfUserByUserId(userId: string, jwt: string): Promise<Jo
         return [];
     }
 };
-interface Props { params: { userId: string }; }
 
+interface Props { params: { userId: string }; };
 export default async function JobsOfUserView({ params }: Props) {
     const { userId } = await params;
     const session: Session | null = await getServerSession(authOptions);
@@ -56,6 +57,7 @@ export default async function JobsOfUserView({ params }: Props) {
                                     {job.linkProject ?? '#link'}
                                 </a>
                             </p>
+                            {job.linkProject && (<JobCharts url={job.linkProject} />)}
 
                         </div>
 

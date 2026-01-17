@@ -40,7 +40,7 @@ export const FormRegisterJob = () => {
       } else if (response.status == 403) {
         toast.error("Você não tem permissão para criar Job.");
       } else {
-        toast.error("erro no servidor, deu pau.");
+        toast.error("Erro vc não tem credito disponivel na carteira, adquira já.");
       }
     } catch {
       toast.error("Erro de comunicação com o servidor");

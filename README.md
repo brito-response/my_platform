@@ -37,11 +37,17 @@
 ``` 
     JWT_SECRET=token32b
     JWT_REFRESH_SECRET=token32b
+    
     EMAIL_HOST=example@gmail.com  
     EMAIL_PORT=587
     EMAIL_USER=example@gmail.com  
     EMAIL_PASS=example#
     TOKEN_SECRET=token_secrets
+
+    EFIPAY_URL=https://api.efipay.com.br
+    EFIPAY_CLIENT_ID=efipay_client_id
+    EFIPAY_CLIENT_SECRET=efipay_client_secret
+    EFIPAY_CERTIFICATE_PATH=./certs/efipay_cert.pem
 ```
 
 - Frontend .env.local
