@@ -11,11 +11,30 @@
   transition: grid-template-columns 0.3s ease;
 }
 
-.header { grid-area: header; }
-.toastify { grid-area: toast; min-height: 2px; }
-.content { grid-area: content; min-height: 0;overflow-y: auto;}
-.side { grid-area: side; min-width: 60px; }
-.footer { grid-area: footer; }
+.header {
+  grid-area: header;
+}
+
+.toastify {
+  grid-area: toast;
+  min-height: 2px;
+}
+
+.content {
+  grid-area: content;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.side {
+  grid-area: side;
+  min-width: 80px;
+  overflow: hidden;
+}
+
+.footer {
+  grid-area: footer;
+}
 
 @media (max-width: 768px) {
   .layout {

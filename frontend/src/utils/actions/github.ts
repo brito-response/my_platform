@@ -1,4 +1,4 @@
-import { GithubProjectUrlData } from "../data_types/git";
+import { GithubProjectUrlData, PortfolioData } from "../data_types/git";
 
 export function parseGithubProjectUrl(url: string): GithubProjectUrlData {
     const parsedUrl = new URL(url);
@@ -11,3 +11,7 @@ export function parseGithubProjectUrl(url: string): GithubProjectUrlData {
 
     return { username: parts[1], projectNumber: Number(parts[3]) };
 }
+
+export function getDefaultLanguages(): PortfolioData[] {
+    return [{ linguagem: "Cobol", porcentagem: 0 }, { linguagem: "TypeScript", porcentagem: 0 }, { linguagem: "Python", porcentagem: 0 }, { linguagem: "Java", porcentagem: 0 }, { linguagem: "C#", porcentagem: 0 }];
+};

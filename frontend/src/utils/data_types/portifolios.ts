@@ -8,6 +8,7 @@ export interface Portfolio {
     academicBackground: string | null;
     banner: string | null;
     description: string | null;
+    githubUsername: string;
     links: string[] | null;
     userId: string;
     createdAt: string;

@@ -29,6 +29,9 @@ export class Portfolio extends Model<InferAttributes<Portfolio>, InferCreationAt
   @Column(DataType.TEXT)
   declare description: CreationOptional<string>;
 
+  @Column(DataType.STRING)
+  declare githubUsername: CreationOptional<string>;
+
   @Column(DataType.ARRAY(DataType.STRING))
   declare links: CreationOptional<string[]>;
 
