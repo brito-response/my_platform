@@ -66,8 +66,7 @@ export async function getPortfolioData(username: string): Promise<PortfolioData[
         for (const result of settled) {
             if (result.status === "fulfilled" && typeof result.value === "object") {
                 for (const [linguagem, bytes] of Object.entries(result.value)) {
-                    linguagemTotal[linguagem] =
-                        (linguagemTotal[linguagem] || 0) + (bytes as number);
+                    linguagemTotal[linguagem] = (linguagemTotal[linguagem] || 0) + (bytes as number);
                 }
             }
         }
