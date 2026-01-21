@@ -1,6 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateJobDto } from './create-job.dto';
 
-export class UpdateJobDto extends PartialType(CreateJobDto) {
-    linkProject?: string;
-}
+export class UpdateJobDto extends PartialType(CreateJobDto) {}

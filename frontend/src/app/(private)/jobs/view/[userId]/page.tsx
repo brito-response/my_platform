@@ -5,7 +5,7 @@ import { JobWithProposals } from "@/utils/data_types/jobs";
 import { redirect } from "next/navigation";
 import { InfoLinkProfile } from "@/components/Shared/InfoLinkProfile";
 import { Proposal } from "@/utils/data_types/proposals";
-import { FormButtonAceptProposal } from "@/forms";
+import { FormButtonAceptProposal, FormUpdateJobLink } from "@/forms";
 import { JobCharts } from "@/components/JobCharts";
 
 async function getAllJobsOfUserByUserId(userId: string, jwt: string): Promise<JobWithProposals[]> {
@@ -52,11 +52,7 @@ export default async function JobsOfUserView({ params }: Props) {
                             <h2 className="text-lg font-semibold">{job.title}</h2>
                             <p className="text-sm text-gray-500">Orçamento: <strong>R$ {job.budget}</strong> • Prazo:{" "} {new Date(job.deadline).toLocaleDateString()}</p>
                             <p className="text-sm text-gray-500">Propostas recebidas: {job.proposals?.length ?? 0}</p>
-                            <p className="text-sm text-gray-500">Link de produção:
-                                <a href={job.linkProject ?? '#link'} target="_blank" rel="noopener noreferrer" className="text-blue-600 px-4 underline hover:text-blue-800 transition-colors">
-                                    {job.linkProject ?? '#link'}
-                                </a>
-                            </p>
+                            <FormUpdateJobLink linkRepo={job.linkProject} jobId={job.jobId} />
                             {job.linkProject && (<JobCharts url={job.linkProject} />)}
 
                         </div>

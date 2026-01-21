@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, IsNumber, IsUUID, IsArray, IsDateString, Min, IsISO8601, IsDate } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, IsUUID, IsArray, Min, IsDate } from 'class-validator';
 import { JobLevel, StatusJob } from '../entities/job.entity';
 import { Type } from 'class-transformer';
 

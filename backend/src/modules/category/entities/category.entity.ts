@@ -20,7 +20,6 @@ export class Category extends Model<InferAttributes<Category>, InferCreationAttr
     declare isActive: boolean;
 
     //relationships
-
     @BelongsToMany(() => Job, () => JobCategory)
     declare jobs: Job[]
 }

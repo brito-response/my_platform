@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { UserModule } from './modules/user/user.module';
@@ -12,7 +13,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { CategoryModule } from './modules/category/category.module';
 import { ProjectModule } from './modules/project/project.module';
-import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { JobfrellasModule } from './modules/jobfrellas/jobfrellas.module';

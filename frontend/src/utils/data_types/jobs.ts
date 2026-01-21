@@ -1,7 +1,7 @@
 import { Proposal } from "./proposals";
 
-export enum StatusJob { OPEN = 'OPEN', IN_PROGRESS = 'IN_PROGRESS', DONE = 'DONE', CANCELLED = 'CANCELLED', };
-export enum JobLevel { LOW = "LOW", MEDIUM = "MEDIUM", JUNIOR = "JUNIOR", PLENO = "PLENO", SENIOR = "SENIOR", EXPERT = "EXPERT", };
+export enum StatusJob { OPEN = "OPEN", IN_PROGRESS = "IN_PROGRESS", DONE = "DONE", CANCELLED = "CANCELLED" };
+export enum JobLevel { LOW = "LOW", MEDIUM = "MEDIUM", JUNIOR = "JUNIOR", PLENO = "PLENO", SENIOR = "SENIOR", EXPERT = "EXPERT" };
 
 export interface JobInput {
     title: string;

@@ -6,6 +6,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from '../user/utils/decorators/roles.decorator';
 import { JwtAuthGuard } from '../user/utils/guards/jwt.guard';
 import { RolesGuard } from '../user/utils/guards/roles.guard';
+import { UpdateLinkJobDto } from './dto/update-link-job.dto';
 
 @Controller('jobs')
 export class JobController {
@@ -46,6 +47,14 @@ export class JobController {
   @Patch(':id')
   async update(@Param('id') jobId: string, @Body() updateJobDto: UpdateJobDto) {
     return await this.jobService.update(jobId, updateJobDto);
+  }
+
+  @ApiBearerAuth('jwt')
+  @Roles('ADMIN', 'CLIENT', 'FREELANCER')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':id/link-project')
+  async updateLinkProject(@Param('id') jobId: string, @Body() updateLinkJobDto: UpdateLinkJobDto) {
+    return await this.jobService.updateLink(jobId, updateLinkJobDto.linkProject);
   }
 
   @ApiBearerAuth('jwt')

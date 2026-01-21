@@ -120,4 +120,11 @@ export class JobRepository extends BaseRepository<Job> {
         return Proposal.count({ where: { jobId, status: ProposalStatus.ACCEPTED }, transaction });
     }
 
+    async updateLinkByJobId(jobId: string, linkProject: string): Promise<Job | null> {
+        const [affectedRows] = await this.jobModel.update({ linkProject }, { where: { jobId }, returning: true });
+        if (affectedRows === 0) return null;
+        const job = await this.jobModel.findByPk(jobId);
+        return job;
+    }
+
 }

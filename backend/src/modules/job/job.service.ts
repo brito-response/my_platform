@@ -101,4 +101,12 @@ export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
 
   }
 
+  async updateLink(jobId: string, updateLink: string): Promise<Job> {
+    const job = await this.jobRepository.findById(jobId);
+    if (!job) throw new ApiError('Job not found', 404);
+    const jobAtualizado = await this.jobRepository.updateLinkByJobId(jobId, updateLink);
+    if (!jobAtualizado) throw new ApiError('error in update', 400);
+    return jobAtualizado;
+  }
+
 }
