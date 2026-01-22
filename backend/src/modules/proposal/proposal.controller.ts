@@ -1,26 +1,29 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ProposalService } from './proposal.service';
-import { CreateProposalDto } from './dto/create-proposal.dto';
-import { UpdateProposalDto } from './dto/update-proposal.dto';
-import { RolesGuard } from '../user/utils/guards/roles.guard';
-import { JwtAuthGuard } from '../user/utils/guards/jwt.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Roles } from '../user/utils/decorators/roles.decorator';
+import { ApiErrorResponseDto } from 'src/common/errors/base.api.error.dto';
+import { CreateProposalDto, ResponseProposalDto, UpdateProposalDto } from './dto';
+import { JwtAuthGuard, RolesGuard } from '../user/utils/guards';
+import { ProposalService } from './proposal.service';
 
 @Controller('proposals')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) { }
 
+  @ApiCreatedResponse({ type: ResponseProposalDto })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto })
   @ApiBearerAuth('jwt')
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  async create(@Body() createProposalDto: CreateProposalDto) {
+  async create(@Body() createProposalDto: CreateProposalDto): Promise<ResponseProposalDto> {
     return await this.proposalService.createForCustomProblem(createProposalDto);
   }
 
+  @ApiOkResponse({ type: ResponseProposalDto, isArray: true })
   @Get()
-  async findAll() {
+  async findAll(): Promise<ResponseProposalDto[]> {
     return await this.proposalService.findAll();
   }
 
@@ -60,6 +63,9 @@ export class ProposalController {
     return await this.proposalService.findByUser(userId);
   }
 
+  @ApiCreatedResponse({ type: ResponseProposalDto })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto })
   @ApiBearerAuth('jwt')
   @Roles('ADMIN', 'CLIENT')
   @UseGuards(JwtAuthGuard, RolesGuard)
