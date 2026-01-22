@@ -20,11 +20,11 @@
 
 ## Technologies_Used
 
-- Nestjs, Nextjs e tailwind css
+- Nestjs, Nextjs and tailwindcss
 
 ## Designer_basis_for_application
 
-- [figma](https://www.figma.com/design/nxZwWJxp4Zjshgj4WBGJRs/Clothing-Store-App%2FFashion-E-Commerce-App-%7C-App%C2%A0UI%C2%A0Kit-(Community)?node-id=0-1&t=qj4wMnJPPOHwPeJu-1)
+- [figma](https://www.figma.com/design/2JBStvf2FLCR542k872sjv/Design-Agency-Landing-Page--Community-?node-id=0-1&m=dev&t=bYwey8RIT9Ur0zMG-1)
 
 ## Prerequisites
 
@@ -61,13 +61,16 @@
 
 ## Running_Application
 
-- Entre nessa pasta  e rode docker compose up -d para criar container do banco.
-- Abra terminal na pasta frontend
+- Go to the my_platform folder for create database :
+```bash
+    docker compose up -d
 ```
+- Go to frontend folder:
+```bash
     npm i && npm run dev
 ```
-- Abra terminal na pasta backend
-```
+- Open a new terminal and go to backend folder:
+```bash
     npm i && npm run start:dev
 ```
 
@@ -79,5 +82,3 @@
 
 ## About_the_Author
 - Clodoaldo Neto :call_me_hand:
-
-color base: backgroundColor: '#8B5E3B',

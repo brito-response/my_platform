@@ -49,6 +49,17 @@ export const FormUpdateJobLink: React.FC<FormUpdateJobLinkProps> = ({ linkRepo, 
                         <h2 className="text-lg font-semibold mb-4">
                             Atualizar link do projeto
                         </h2>
+                        <ul>
+                            <li className="text-sm text-gray-600 mb-2">
+                                - O link deve ser uma URL válida (começando com "http://" ou "https://").
+                            </li>
+                            <li className="text-sm text-gray-600 mb-2">
+                                - Certifique-se de que o link do projeto esteja acessível publicamente e principalmente fora do repo de codigo. 
+                            </li>
+                            <li className="text-sm text-gray-600">
+                                - Verifique se o link leva diretamente ao projeto em produção.
+                            </li>
+                        </ul>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <input type="url" placeholder="https://meuprojeto.com" value={link} onChange={(e) => setLink(e.target.value)} required className="w-full border rounded px-3 py-2" />
