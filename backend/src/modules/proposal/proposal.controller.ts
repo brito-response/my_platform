@@ -76,4 +76,4 @@ export class ProposalController {
     return await this.proposalService.acceptProposal(id);
   }
 
-}
+};

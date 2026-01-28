@@ -16,10 +16,7 @@ async function bootstrap() {
   });
 
   const uploadPath = join(process.cwd(), 'uploads/projects');
-  if (!existsSync(uploadPath)) {
-    mkdirSync(uploadPath, { recursive: true });
-    console.log(`Pasta criada em: ${uploadPath}`);
-  }
+  if (!existsSync(uploadPath)) mkdirSync(uploadPath, { recursive: true });
 
   app.useGlobalFilters(new ControllerAdviceFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
