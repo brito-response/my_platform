@@ -1,38 +1,25 @@
-import { CalendarDay, GithubProjectUrlData, ParsedTask, PortfolioData, ProjectItem, UserTaskProgress } from "../data_types/git";
+import { GithubProjectUrlData, ParsedTask, PortfolioData, ProjectItem, UserTaskProgress } from "../data_types/git";
 
 export function parseGithubProjectUrl(url: string): GithubProjectUrlData {
-    const parsedUrl = new URL(url);
-    const parts = parsedUrl.pathname.split("/").filter(Boolean);
-    // ["users", "brito-response", "projects", "2"]
+  const parsedUrl = new URL(url);
+  const parts = parsedUrl.pathname.split("/").filter(Boolean);
 
-    if (parts.length !== 4 || parts[0] !== "users" || parts[2] !== "projects") {
-        throw new Error("URL de GitHub Project inválida");
-    }
-
-    return { username: parts[1], projectNumber: Number(parts[3]) };
+  if (parts.length !== 4 || parts[0] !== "users" || parts[2] !== "projects") { throw new Error("URL de GitHub Project inválida"); }
+  return { username: parts[1], projectNumber: Number(parts[3]) };
 }
 
 export function getDefaultLanguages(): PortfolioData[] {
-    return [{ linguagem: "Cobol", porcentagem: 0 }, { linguagem: "TypeScript", porcentagem: 0 }, { linguagem: "Python", porcentagem: 0 }, { linguagem: "Java", porcentagem: 0 }, { linguagem: "C#", porcentagem: 0 }];
+  return [{ linguagem: "Cobol", porcentagem: 0 }, { linguagem: "TypeScript", porcentagem: 0 }, { linguagem: "Python", porcentagem: 0 }, { linguagem: "Java", porcentagem: 0 }, { linguagem: "C#", porcentagem: 0 }];
 };
 
 export function parseTaskFromCommit(message: string): ParsedTask | null {
-  // Ex: "--t login 2/3 ajustando validação"
   const match = message.match(/--t\s+([\w-]+)\s+(\d+)\/(\d+)/i);
-
   if (!match) return null;
-
-  return {
-    taskId: match[1],
-    current: Number(match[2]),
-    total: Number(match[3]),
-  };
+  return { taskId: match[1], current: Number(match[2]), total: Number(match[3]) };
 }
 
 
-export function buildUserTaskProgress(
-  items: ProjectItem[]
-): UserTaskProgress {
+export function buildUserTaskProgress(items: ProjectItem[]): UserTaskProgress {
   const progress: UserTaskProgress = {};
 
   items.forEach(item => {
@@ -42,20 +29,12 @@ export function buildUserTaskProgress(
       const parsed = parseTaskFromCommit(commit.message);
       if (!parsed) return;
 
-      const user =
-        commit.author?.user?.login ??
-        commit.author?.name ??
-        "unknown";
-
+      const user = commit.author?.user?.login ?? commit.author?.name ?? "unknown";
       if (!progress[user]) {
         progress[user] = { tasks: {} };
       }
 
-      progress[user].tasks[parsed.taskId] = {
-        current: parsed.current,
-        total: parsed.total,
-        completed: parsed.current === parsed.total,
-      };
+      progress[user].tasks[parsed.taskId] = { current: parsed.current, total: parsed.total, completed: parsed.current === parsed.total };
     });
   });
 

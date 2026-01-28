@@ -3,15 +3,15 @@
 import { useForm, FormProvider } from 'react-hook-form';
 import { redirect } from 'next/navigation';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formSchema } from './formredef-scheme';
-import { IFormInputRedem, sendRedemServerSideProps } from '../../utils/actions';
+import { formSchema, FormSchemaType } from './formredef-scheme';
 import { InputCustom } from '@/components/InputCustom';
+import { sendredef } from '@/utils/actions';
 
 export const FormRedef = () => {
-  const methods = useForm<IFormInputRedem>({ resolver: yupResolver(formSchema) , mode: 'onChange', defaultValues: { token: '', password: '', confirpassword: '' } });
+  const methods = useForm<FormSchemaType>({ resolver: yupResolver(formSchema) , mode: 'onChange', defaultValues: { token: '', password: '', confirpassword: '' } });
 
-  const onSubmit = async (data: IFormInputRedem) => {
-    const response = await sendRedemServerSideProps(data);
+  const onSubmit = async (data: FormSchemaType) => {
+    const response = await sendredef(data);
     if (response.statusCode === 200) {
       redirect("/login");
     }

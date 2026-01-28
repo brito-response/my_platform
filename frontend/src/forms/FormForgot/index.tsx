@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { sendEmail, Response } from "@/utils/actions";
 import { redirect } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import { sendEmailServerSideProps, Response } from "../../utils/actions";
 import { toast } from "react-toastify";
 
 export const FormForgot = () => {
@@ -14,7 +14,7 @@ export const FormForgot = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const email = (e.target as HTMLFormElement).email.value;
-        const data = await sendEmailServerSideProps(email);
+        const data = await sendEmail(email);
         setData(data);
         if (data.statusCode != 200) {
             toast.error(data.message);

@@ -28,7 +28,7 @@ export default async function RootLayout({ children, cookies }: RootLayoutProps)
         <ThemeInitializer />
         <MainLayout>
           <Header />
-          <ToastContainer />
+          <ToastContainer position="top-center" />
           {children}
           <Footer />
         </MainLayout>

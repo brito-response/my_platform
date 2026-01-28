@@ -32,7 +32,7 @@ export default function RootLayout({ children, cookies }: RootLayoutProps) {
         <MenuProvider>
           <ManagerLayout>
             <Header />
-            <ToastContainer />
+            <ToastContainer position="top-center" />
             <MenuAside />
             <LayoutCaptureError>
               {children}

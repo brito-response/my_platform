@@ -15,4 +15,4 @@ export interface Wallet {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
