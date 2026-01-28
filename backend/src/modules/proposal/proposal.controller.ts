@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Roles } from '../user/utils/decorators/roles.decorator';
 import { ApiErrorResponseDto } from 'src/common/errors/base.api.error.dto';
-import { CreateProposalDto, ResponseProposalDto, UpdateProposalDto } from './dto';
+import { CreateProposalDto, ResponseProposalDto, ResponseProposalreportsDto, UpdateProposalDto } from './dto';
 import { JwtAuthGuard, RolesGuard } from '../user/utils/guards';
 import { ProposalService } from './proposal.service';
 
@@ -22,13 +22,15 @@ export class ProposalController {
   }
 
   @ApiOkResponse({ type: ResponseProposalDto, isArray: true })
+  @ApiInternalServerErrorResponse({ type: ApiErrorResponseDto })
   @Get()
   async findAll(): Promise<ResponseProposalDto[]> {
     return await this.proposalService.findAll();
   }
 
+  @ApiOkResponse({ type: ResponseProposalreportsDto })
   @Get('reports')
-  async findReports() {
+  async findReports(): Promise<ResponseProposalreportsDto> {
     return await this.proposalService.getReports();
   }
 

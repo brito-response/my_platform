@@ -4,9 +4,9 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Proposal, ProposalStatus } from "../entities/proposal.entity";
 import { Job } from "src/modules/job/entities/job.entity";
 import { User } from "src/modules/user/entities/user.entity";
-import { ProposalsData, ProposalStatusCount } from "../dto/proposal-report.dto";
 import { Sequelize } from "sequelize-typescript";
 import { Transaction } from "sequelize";
+import { ProposalsData, ProposalStatusCount } from "../dto/response-proposal-reports.dto";
 
 @Injectable()
 export class ProposalRepository extends BaseRepository<Proposal> {

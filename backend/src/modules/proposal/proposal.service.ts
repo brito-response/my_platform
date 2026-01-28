@@ -4,13 +4,13 @@ import { BaseService } from 'src/common/base/base.service';
 import { Proposal, ProposalStatus } from './entities/proposal.entity';
 import { ProposalRepository } from './repository/proposal.repository';
 import { ApiError } from 'src/common/errors/api.error';
-import { ProposalsData } from './dto/proposal-report.dto';
 import { UpdateProposalDto } from './dto/update-proposal.dto';
 import { Transaction } from 'sequelize';
 import { JobService } from '../job/job.service';
 import { Sequelize } from 'sequelize-typescript';
 import { JobfrellasService } from '../jobfrellas/jobfrellas.service';
 import { JobFrellaStatus } from '../jobfrellas/entities/jobfrella.entity';
+import { ProposalsData } from './dto/response-proposal-reports.dto';
 
 @Injectable()
 export class ProposalService extends BaseService<Proposal, CreateProposalDto, UpdateProposalDto> {
