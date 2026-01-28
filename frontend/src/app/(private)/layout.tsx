@@ -29,7 +29,6 @@ export default function RootLayout({ children, cookies }: RootLayoutProps) {
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased ${theme === 'dark' ? 'dark' : ''}`} data-testid="root-layout">
         <ThemeInitializer />
-
         <MenuProvider>
           <ManagerLayout>
             <Header />
@@ -41,7 +40,6 @@ export default function RootLayout({ children, cookies }: RootLayoutProps) {
             <Footer />
           </ManagerLayout>
         </MenuProvider>
-
       </body>
     </html >
   );

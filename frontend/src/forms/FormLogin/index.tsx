@@ -9,10 +9,7 @@ import { usePathname } from "next/navigation";
 import { SubButton } from "@/components/Shared/Buttons/SubButton";
 import Link from "next/link";
 
-type TypeLoginData = {
-  email: string;
-  password: string;
-};
+type TypeLoginData = {email: string;password: string;};
 
 export const FormLogin: React.FC = () => {
   const pathname = usePathname();

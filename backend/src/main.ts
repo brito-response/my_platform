@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ControllerAdviceFilter } from './common/filters/controleradvice.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
@@ -14,7 +14,7 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
-  
+
   const uploadPath = join(process.cwd(), 'uploads/projects');
   if (!existsSync(uploadPath)) {
     mkdirSync(uploadPath, { recursive: true });
@@ -23,6 +23,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new ControllerAdviceFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  // app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder().setTitle('Kingdom of freelas')
     .setDescription('A freelancer platform that aims to correct common mistakes made by others..')

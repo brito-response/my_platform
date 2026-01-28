@@ -27,7 +27,7 @@ export class ProposalService extends BaseService<Proposal, CreateProposalDto, Up
   async createForCustomProblem(createProposalDto: CreateProposalDto): Promise<Proposal> {
     const exists = await this.proposalRepository.findByJobAndUser(createProposalDto.jobId, createProposalDto.userId);
     if (exists) throw new ApiError('You already made a proposal for this job', 400);
-    return this.create(createProposalDto);
+    return await this.create(createProposalDto);
   }
 
   async findByJob(jobId: string): Promise<Proposal[]> {
