@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Roles } from '../user/utils/decorators/roles.decorator';
-import { ApiErrorResponseDto } from 'src/common/errors/base.api.error.dto';
 import { CreateProposalDto, ResponseProposalDto, ResponseProposalreportsDto, UpdateProposalDto } from './dto';
 import { JwtAuthGuard, RolesGuard } from '../user/utils/guards';
 import { ProposalService } from './proposal.service';
+import { ApiErrorResponseDto } from 'src/common/base/base.dto';
 
 @Controller('proposals')
 export class ProposalController {

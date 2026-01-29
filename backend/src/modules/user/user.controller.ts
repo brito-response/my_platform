@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseGuards, UseInterceptors, UploadedFiles, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './utils/dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 import { EmailResetDto } from './utils/dto/email-reset.dto';
 import { ResetPasswordDto } from './utils/dto/reset-password.dto';
 import { ApiError } from 'src/common/errors/api.error';
@@ -14,16 +14,20 @@ import { RolesGuard } from './utils/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { ResponseUserDto } from './utils/dto/response-user.dto';
+import { ApiErrorResponseDto } from 'src/common/base/base.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
+  @ApiCreatedResponse({ type: ResponseUserDto })
+  @ApiBadRequestResponse({ description: "passwords do not match", type: ApiErrorResponseDto })
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     const { password, repeatPassword } = createUserDto;
     if (password !== repeatPassword) throw new ApiError('passwords do not match', 400);
-    return await this.userService.create(createUserDto);
+    return await this.userService.createWithRemovePassword(createUserDto);
   }
 
   @Get('reports')
@@ -35,7 +39,7 @@ export class UserController {
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<ResponseUserDto[]> {
     return this.userService.findAll();
   }
 
@@ -43,7 +47,7 @@ export class UserController {
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUserDto): Promise<[number, User[]]> {
+  async update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUserDto): Promise<ResponseUserDto> {
     return this.userService.update(id, updateUsuarioDto);
   }
 
@@ -69,7 +73,7 @@ export class UserController {
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User | null> {
+  async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
     return this.userService.findOne(id);
   }
 

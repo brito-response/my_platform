@@ -6,11 +6,12 @@ import { ContractRepository } from './repository/contract.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { ContractsData } from './dto/contracts-data.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
+import { ResponseContract } from './dto/response-contract.dto';
 
 @Injectable()
-export class ContractService extends BaseService<Contract, CreateContractDto, UpdateContractDto> {
+export class ContractService extends BaseService<Contract, CreateContractDto, UpdateContractDto,ResponseContract> {
   constructor(private readonly contractRepository: ContractRepository) {
-    super(contractRepository);
+    super(contractRepository,(contract) => contract.toJSON());
   }
 
   async findByJob(jobId: string): Promise<Contract> {

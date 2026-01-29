@@ -2,8 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ProposalStatus } from '../entities/proposal.entity';
 import { Exclude, Expose } from 'class-transformer';
 
+export interface ResponseProposal {
+    proposalId: string;
+    value: number;
+    deadline: Date;
+    message: string;
+    status: ProposalStatus;
+    userId: string;
+    jobId: string;
+    updatedAt?: Date;
+    createdAt?: Date;
+};
+
 @Exclude()
-export class ResponseProposalDto {
+export class ResponseProposalDto implements ResponseProposal {
     @ApiProperty({ format: 'uuid', example: '9b9a7b62-fd5a-4e12-9c59-d3b3d6e94c67' })
     @Expose()
     proposalId: string;

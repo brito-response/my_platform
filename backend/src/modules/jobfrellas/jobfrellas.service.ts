@@ -6,11 +6,12 @@ import { JobFrella } from './entities/jobfrella.entity';
 import { JobFrellaRepository } from './repository/jobfreela.repository';
 import { InferCreationAttributes, Transaction } from 'sequelize';
 import { ApiError } from 'src/common/errors/api.error';
+import { ResponseJobfrella } from './dto/response-jobfrella.dto';
 
 @Injectable()
-export class JobfrellasService extends BaseService<JobFrella, CreateJobfrellaDto, UpdateJobfrellaDto> {
+export class JobfrellasService extends BaseService<JobFrella, CreateJobfrellaDto, UpdateJobfrellaDto, ResponseJobfrella> {
   constructor(private readonly jobfrellaRepository: JobFrellaRepository) {
-    super(jobfrellaRepository);
+    super(jobfrellaRepository, (jobfreela) => jobfreela.toJSON());
   }
 
   async createWithTransaction(jobfrella: CreateJobfrellaDto, transaction: Transaction) {

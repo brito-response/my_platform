@@ -11,20 +11,21 @@ import { Sequelize } from 'sequelize-typescript';
 import { JobfrellasService } from '../jobfrellas/jobfrellas.service';
 import { JobFrellaStatus } from '../jobfrellas/entities/jobfrella.entity';
 import { ProposalsData } from './dto/response-proposal-reports.dto';
+import { ResponseProposal } from './dto/response-proposal.dto';
 
 @Injectable()
-export class ProposalService extends BaseService<Proposal, CreateProposalDto, UpdateProposalDto> {
+export class ProposalService extends BaseService<Proposal, CreateProposalDto, UpdateProposalDto, ResponseProposal> {
   constructor(private readonly proposalRepository: ProposalRepository,
     @Inject(forwardRef(() => JobService))
     private readonly jobService: JobService,
     private readonly sequelize: Sequelize,
     @Inject(forwardRef(() => JobfrellasService))
-    private readonly jobFrellasService:JobfrellasService
+    private readonly jobFrellasService: JobfrellasService
   ) {
-    super(proposalRepository);
+    super(proposalRepository, (proposal) => proposal.toJSON());
   }
 
-  async createForCustomProblem(createProposalDto: CreateProposalDto): Promise<Proposal> {
+  async createForCustomProblem(createProposalDto: CreateProposalDto): Promise<ResponseProposal> {
     const exists = await this.proposalRepository.findByJobAndUser(createProposalDto.jobId, createProposalDto.userId);
     if (exists) throw new ApiError('You already made a proposal for this job', 400);
     return await this.create(createProposalDto);
@@ -49,9 +50,9 @@ export class ProposalService extends BaseService<Proposal, CreateProposalDto, Up
       const acceptedCount = await this.jobService.countAcceptedProposals(proposal.jobId, transaction);
 
       if (acceptedCount >= job.maxFreelancers) throw new ApiError('you have already accepted the maximum number of proposals for this job.', 400);
-      
+
       const amountToReceive = Number((job.budget / job.maxFreelancers).toFixed(2));
-      await this.jobFrellasService.createWithTransaction({ jobId:job.jobId, freelancerId: proposal.userId, proposalId:proposal.proposalId, amountToReceive, status: JobFrellaStatus.APPROVED }, transaction);
+      await this.jobFrellasService.createWithTransaction({ jobId: job.jobId, freelancerId: proposal.userId, proposalId: proposal.proposalId, amountToReceive, status: JobFrellaStatus.APPROVED }, transaction);
 
       proposal.status = ProposalStatus.ACCEPTED;
       await proposal.save({ transaction });

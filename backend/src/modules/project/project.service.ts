@@ -8,11 +8,12 @@ import { ProjectPortfolio } from './entities/projectportfolio.entity';
 import { InferCreationAttributes } from 'sequelize';
 import { ProjectsData } from './dto/projects-data.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ResponseProject } from './dto/response-project.dto';
 
 @Injectable()
-export class ProjectService extends BaseService<Project, CreateProjectDto,UpdateProjectDto> {
+export class ProjectService extends BaseService<Project, CreateProjectDto, UpdateProjectDto, ResponseProject> {
   constructor(private readonly projectRepository: ProjectRepository) {
-    super(projectRepository);
+    super(projectRepository, (project) => project.toJSON());
   }
 
   async createWithrelationship(createProjectDto: CreateProjectDto) {

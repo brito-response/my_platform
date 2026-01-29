@@ -7,11 +7,12 @@ import { RegisterLinkDto } from './dto/register-link-portfolio.dto';
 import { ApiError } from 'src/common/errors/api.error';
 import { Project } from '../project/entities/project.entity';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { ResponsePortfolio } from './dto/response-portfolio.dto';
 
 @Injectable()
-export class PortfolioService extends BaseService<Portfolio, CreatePortfolioDto,UpdatePortfolioDto> {
+export class PortfolioService extends BaseService<Portfolio, CreatePortfolioDto, UpdatePortfolioDto, ResponsePortfolio> {
   constructor(private readonly portifolioRepository: PortifolioRepository) {
-    super(portifolioRepository);
+    super(portifolioRepository, (portifolio) => portifolio.toJSON());
   }
 
   async getlinksOfUser(id: string): Promise<String[]> {

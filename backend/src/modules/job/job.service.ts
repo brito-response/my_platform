@@ -10,15 +10,16 @@ import { UpdateJobDto } from './dto/update-job.dto';
 import { WalletService } from '../wallet/wallet.service';
 import { Sequelize } from 'sequelize-typescript';
 import { InferCreationAttributes, Transaction } from 'sequelize';
+import { ResponseJob } from './dto/response-job.dto';
 
 @Injectable()
-export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto> {
+export class JobService extends BaseService<Job, CreateJobDto, UpdateJobDto, ResponseJob> {
   constructor(private readonly jobRepository: JobRepository, private readonly userService: UserService,
     @Inject(forwardRef(() => WalletService))
     private readonly walletService: WalletService,
     private readonly sequelize: Sequelize,
   ) {
-    super(jobRepository);
+    super(jobRepository, (job) => job.toJSON());
   }
 
   async create(createJobDto: CreateJobDto): Promise<Job> {

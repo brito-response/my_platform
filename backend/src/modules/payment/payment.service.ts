@@ -10,11 +10,12 @@ import { Sequelize } from 'sequelize-typescript';
 import { UserService } from '../user/user.service';
 import { ApiError } from 'src/common/errors/api.error';
 import { PaymentResponse } from './utils/efi.interfaces';
+import { ResponsePayment } from './dto/response-payment.dto';
 
 @Injectable()
-export class PaymentService extends BaseService<Payment, CreatePaymentDto, UpdatePaymentDto> {
+export class PaymentService extends BaseService<Payment, CreatePaymentDto, UpdatePaymentDto, ResponsePayment> {
   constructor(private readonly paymentRepository: PaymentRepository, private readonly userService: UserService, private readonly walletService: WalletService, private readonly efiService: EfiService, private readonly sequelize: Sequelize) {
-    super(paymentRepository);
+    super(paymentRepository, (payment) => payment.toJSON());
   }
 
   async getById(paymentId: string): Promise<Payment> {

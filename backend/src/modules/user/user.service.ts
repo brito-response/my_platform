@@ -15,14 +15,15 @@ import { PortfolioService } from '../portfolio/portfolio.service';
 import { Portfolio } from '../portfolio/entities/portfolio.entity';
 import { UsersData } from './utils/dto/user-report.dto';
 import { UpdateUserDto } from './utils/dto/update-user.dto';
+import { ResponseUser } from './utils/dto/response-user.dto';
 
 @Injectable()
-export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto> {
+export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto, ResponseUser> {
   constructor(private readonly userRepository: UserRepository, private readonly emailService: EmailService, private readonly tokenService: TokenService, private readonly portifolioService: PortfolioService) {
-    super(userRepository);
+    super(userRepository, (user) => user.toJSON());
   }
 
-  async create(createDto: CreateUserDto): Promise<User> {
+  async createWithRemovePassword(createDto: CreateUserDto): Promise<ResponseUser> {
     const { repeatPassword, ...userData } = createDto;
     return await this.userRepository.criar(userData as InferCreationAttributes<User>);
   }
@@ -111,9 +112,10 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
   }
 
   async updatePassword(id: string, updateDto: UpdateUserPasswordDto): Promise<[number, User[]]> {
-    const user = await this.findOne(id);
-    const passwordMatch = await bcrypt.compare(updateDto.password, user.password);
-
+    const user = await this.userRepository.findOne(id);
+    if (!user) throw new ApiError("user not found", 404);
+    
+    const passwordMatch = await bcrypt.compare(updateDto.password, user.password ?? '');
     if (!passwordMatch) throw new ApiError("invalid user password", 400);
 
     const hashed = await bcrypt.hash(updateDto.newPassword, 12);

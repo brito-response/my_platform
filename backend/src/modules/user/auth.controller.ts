@@ -5,8 +5,8 @@ import { ApiError } from 'src/common/errors/api.error';
 import { RefreshDto } from './utils/dto/refresh-user.dto';
 import { ApiBadRequestResponse, ApiNotFoundResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { LoginResponseDto } from './utils/dto/response-login.dto';
-import { ApiErrorResponseDto } from 'src/common/errors/base.api.error.dto';
 import { ResponseResfreshTokenDto } from './utils/dto/response-resfresh.dto';
+import { ApiErrorResponseDto } from 'src/common/base/base.dto';
 
 @Controller('auth')
 export class AuthController {

@@ -9,14 +9,15 @@ import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { JobService } from '../job/job.service';
 import { JobfrellasService } from '../jobfrellas/jobfrellas.service';
+import { ResponseWallet } from './dto/response-wallet.dto';
 
 @Injectable()
-export class WalletService extends BaseService<Wallet, CreateWalletDto, UpdateWalletDto> {
+export class WalletService extends BaseService<Wallet, CreateWalletDto, UpdateWalletDto, ResponseWallet> {
   constructor(private readonly walletRepository: WalletRepository,
     @Inject(forwardRef(() => JobService))
     private readonly jobService: JobService,
     private readonly jobFreelancerService: JobfrellasService, private readonly sequelize: Sequelize) {
-    super(walletRepository);
+    super(walletRepository, (wallet) => wallet.toJSON());
   }
 
   async finByUserId(userId: string): Promise<Wallet> {

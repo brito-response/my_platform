@@ -4,11 +4,12 @@ import { MessageRepository } from './repository/message.repository';
 import { BaseService } from 'src/common/base/base.service';
 import { Message } from './entities/message.entity';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { ResponseMessage } from './dto/response-message.dto';
 
 @Injectable()
-export class MessageService extends BaseService<Message, CreateMessageDto, UpdateMessageDto> {
+export class MessageService extends BaseService<Message, CreateMessageDto, UpdateMessageDto, ResponseMessage> {
   constructor(private readonly messageRepository: MessageRepository) {
-    super(messageRepository);
+    super(messageRepository, (message) => message.toJSON());
   }
 
   async getConversation(user1Id: string, user2Id: string): Promise<Message[]> {
@@ -18,5 +19,5 @@ export class MessageService extends BaseService<Message, CreateMessageDto, Updat
   async sendMessage(dto: CreateMessageDto): Promise<Message> {
     return this.messageRepository.createMessageWithUsers(dto.senderId, dto.receiverId, dto.content, dto.file);
   }
-  
+
 }

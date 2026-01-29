@@ -6,11 +6,12 @@ import { ReviewRepository } from './repository/review.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { InferAttributes } from 'sequelize';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewResponse } from './dto/response-review.dto';
 
 @Injectable()
-export class ReviewService extends BaseService<Review, CreateReviewDto, UpdateReviewDto> {
+export class ReviewService extends BaseService<Review, CreateReviewDto, UpdateReviewDto, ReviewResponse> {
   constructor(private readonly reviewRepository: ReviewRepository) {
-    super(reviewRepository);
+    super(reviewRepository, (review) => review.toJSON());
   }
 
   async findByUser(userId: string) {

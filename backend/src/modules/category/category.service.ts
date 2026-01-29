@@ -6,11 +6,12 @@ import { CategoryRepository } from './repository/category.repository';
 import { ApiError } from 'src/common/errors/api.error';
 import { Job } from '../job/entities/job.entity';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ResponseCategory } from './dto/response-category.dto';
 
 @Injectable()
-export class CategoryService extends BaseService<Category, CreateCategoryDto, UpdateCategoryDto> {
+export class CategoryService extends BaseService<Category, CreateCategoryDto, UpdateCategoryDto, ResponseCategory> {
   constructor(private readonly categoryRepository: CategoryRepository) {
-    super(categoryRepository);
+    super(categoryRepository, (category) => category.toJSON());
   }
 
   async getJobsByCategory(categoryId: string): Promise<Job[]> {
