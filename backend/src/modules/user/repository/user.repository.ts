@@ -5,8 +5,9 @@ import { InjectModel } from "@nestjs/sequelize";
 import { col, fn, InferCreationAttributes, Sequelize } from "sequelize";
 import { Contract } from "src/modules/contract/entities/contract.entity";
 import { Job } from "src/modules/job/entities/job.entity";
-import { CityStats, StateStats, UsersData } from "../utils/dto/user-report.dto";
 import { Proposal } from "src/modules/proposal/entities/proposal.entity";
+import { UsersData } from "../utils/dto/exports";
+import { ICityStats, IStateStats } from "../utils/dto/user-report.dto";
 
 @Injectable()
 export class UserRepository extends BaseRepository<User> {
@@ -65,9 +66,9 @@ export class UserRepository extends BaseRepository<User> {
         // Total de usuários
         const totalUsers = await this.usuarioModel.count();
         // Usuários por cidade
-        const usersByCity = await this.usuarioModel.findAll({ attributes: ["city", [fn("COUNT", col("city")), "count"],], group: ["city"], raw: true }) as unknown as CityStats[];
+        const usersByCity = await this.usuarioModel.findAll({ attributes: ["city", [fn("COUNT", col("city")), "count"],], group: ["city"], raw: true }) as unknown as ICityStats[];
         // Usuários por estado
-        const usersByState = await this.usuarioModel.findAll({ attributes: ["state", [fn("COUNT", col("state")), "count"]], group: ["state"], raw: true }) as unknown as StateStats[];
+        const usersByState = await this.usuarioModel.findAll({ attributes: ["state", [fn("COUNT", col("state")), "count"]], group: ["state"], raw: true }) as unknown as IStateStats[];
         // Média de valor/hora
         const avgHourlyResult = await this.usuarioModel.findOne({ attributes: [[fn("AVG", col("hourly_rate")), "averageHourlyRate"]], raw: true });
         const averageHourlyRate = Number(avgHourlyResult?.["averageHourlyRate"] ?? 0);

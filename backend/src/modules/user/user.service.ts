@@ -5,7 +5,6 @@ import { fromString, TypeUser, User } from './entities/user.entity';
 import { UserRepository } from './repository/user.repository';
 import { EmailService } from './email.service';
 import { TokenService } from './token.service';
-import * as bcrypt from 'bcrypt';
 import { ApiError } from 'src/common/errors/api.error';
 import { InferCreationAttributes } from 'sequelize';
 import { UpdateUserPasswordDto } from './utils/dto/update-user-password.dto';
@@ -15,6 +14,7 @@ import { PortfolioService } from '../portfolio/portfolio.service';
 import { Portfolio } from '../portfolio/entities/portfolio.entity';
 import { UsersData } from './utils/dto/user-report.dto';
 import { UpdateUserDto } from './utils/dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto> {
@@ -22,7 +22,9 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
     super(userRepository);
   }
 
-  async create(createDto: CreateUserDto): Promise<User> {
+  async createRemovePassword(createDto: CreateUserDto): Promise<User> {
+    const user = await this.userRepository.buscarPorEmail(createDto.email);
+    if (user) { throw new ApiError("already exists user-email in aplication", 400) };
     const { repeatPassword, ...userData } = createDto;
     return await this.userRepository.criar(userData as InferCreationAttributes<User>);
   }

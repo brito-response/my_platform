@@ -2,12 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { ResponseReviewDto } from './dto/response-review.dto';
 
 @Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) { }
+
+  @ApiOkResponse({ type: ResponseReviewDto, isArray: true })
   @Get()
-  async findAll() {
+  async findAll(): Promise<ResponseReviewDto[]> {
     return await this.reviewService.findAll();
   }
 

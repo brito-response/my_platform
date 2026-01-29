@@ -1,11 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { CreatePaymentDto } from './dto/create-payment.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from '../user/utils/decorators/roles.decorator';
-import { JwtAuthGuard } from '../user/utils/guards/jwt.guard';
-import { RolesGuard } from '../user/utils/guards/roles.guard';
+import { JwtAuthGuard, RolesGuard } from '../user/utils/guards';
+import { CreatePaymentDto, UpdatePaymentDto } from './dto';
 
 @Controller('payments')
 export class PaymentController {

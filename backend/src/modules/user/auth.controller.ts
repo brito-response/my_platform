@@ -24,6 +24,7 @@ export class AuthController {
         return await this.authService.login(email, password, clientType);
     }
 
+    @HttpCode(200)
     @ApiOkResponse({ type: ResponseResfreshTokenDto })
     @ApiNotFoundResponse({ description: "user not found" })
     @ApiBadRequestResponse({ description: "client with type invalid", type: ApiErrorResponseDto })

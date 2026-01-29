@@ -5,11 +5,7 @@ import { Proposal } from "src/modules/proposal/entities/proposal.entity";
 import { User } from "src/modules/user/entities/user.entity";
 import { JobFrellaProporsal } from "./jobfrella_proporsal.entity";
 
-export enum JobFrellaStatus {
-    PENDING = "PENDING",
-    APPROVED = "APPROVED",
-    REJECTED = "REJECTED",
-}
+export enum JobFrellaStatus { PENDING = "PENDING", APPROVED = "APPROVED", REJECTED = "REJECTED" };
 
 @Table({ tableName: "tb_jobfrellas", timestamps: true })
 export class JobFrella extends Model<InferAttributes<JobFrella>, InferCreationAttributes<JobFrella>> {
@@ -24,8 +20,8 @@ export class JobFrella extends Model<InferAttributes<JobFrella>, InferCreationAt
     @Column({ type: DataType.ENUM(...Object.values(JobFrellaStatus)), allowNull: false, defaultValue: JobFrellaStatus.PENDING, })
     declare status: JobFrellaStatus;
 
+    
     // relationships 
-
     @ForeignKey(() => User)
     @Column(DataType.UUID)
     declare userId: string;

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseGuard
 import { UserService } from './user.service';
 import { CreateUserDto } from './utils/dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { EmailResetDto } from './utils/dto/email-reset.dto';
 import { ResetPasswordDto } from './utils/dto/reset-password.dto';
 import { ApiError } from 'src/common/errors/api.error';
@@ -14,21 +14,30 @@ import { RolesGuard } from './utils/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { ResponseUserDto } from './utils/dto/response-user.dto';
+import { plainToInstance } from 'class-transformer';
+import { ApiErrorResponseDto } from 'src/common/errors/base.api.error.dto';
+import { UsersDataDto } from './utils/dto/user-report.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
+  @ApiCreatedResponse({ type: ResponseUserDto })
+  @ApiBadRequestResponse({ description: "passwords do not match", type: ApiErrorResponseDto })
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     const { password, repeatPassword } = createUserDto;
     if (password !== repeatPassword) throw new ApiError('passwords do not match', 400);
-    return await this.userService.create(createUserDto);
+    const usercreated = await this.userService.createRemovePassword(createUserDto);
+    return plainToInstance(ResponseUserDto, usercreated.toJSON(), { excludeExtraneousValues: true });
   }
 
+  @ApiOkResponse({ type: UsersDataDto })
   @Get('reports')
-  async findReports() {
-    return await this.userService.getReports();
+  async findReports(): Promise<UsersDataDto> {
+    const data = await this.userService.getReports();
+    return plainToInstance(UsersDataDto, data.toJSON(), { excludeExtraneousValues: true })
   }
 
   @ApiBearerAuth('jwt')
