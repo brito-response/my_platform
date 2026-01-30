@@ -21,15 +21,18 @@ export class BaseService<T extends Model, C, U> {
     return resource;
   }
 
-  async update(id: string, updateDto: U): Promise<[number, T[]]> {
-        await this.findOne(id);
-        return await this.repository.update(id, updateDto);
-    }
-
-    async updatePartial(id: string, data: Partial<T>): Promise<[number, T[]]> {
-        const resource = await this.findOne(id);
-        return await this.repository.updatePartial(id, data);
-    }
+  async update(id: string, updateDto: U): Promise<T> {
+    await this.findOne(id);
+    const [count, rows] = await this.repository.update(id, updateDto);
+    if (count <= 0 || !rows || rows.length === 0) throw new ApiError("update failed", 400)
+    return rows[0];
+  }
+  async updatePartial(id: string, data: Partial<T>): Promise<T> {
+    await this.findOne(id);
+    const [count, rows] = await this.repository.update(id, data);
+    if (count <= 0 || !rows || rows.length === 0) throw new ApiError("update failed", 400)
+    return rows[0];
+  }
 
   async remove(id: string): Promise<number> {
     const resource = await this.repository.findOne(id);

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
+import { Exclude, Expose, Transform } from "class-transformer";
 import { TypeUser, TypeUserStatus } from "../../entities/user.entity";
 
 export interface ResponseUser {
@@ -39,7 +39,13 @@ export class ResponseUserDto implements ResponseUser {
     email: string;
 
     @Expose()
-    @ApiProperty({ example: '12345678900' })
+    @ApiProperty({ example: '***.***.***-900' })
+    @Transform(({ value }) => {
+        if (!value) return value;
+        const digits = value.replace(/\D/g, '');
+        if (digits.length !== 11) return value;
+        return `***.***.***-${digits.slice(-3)}`;
+    })
     cpf: string;
 
     @Expose()

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseGuard
 import { UserService } from './user.service';
 import { CreateUserDto } from './utils/dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { EmailResetDto } from './utils/dto/email-reset.dto';
 import { ResetPasswordDto } from './utils/dto/reset-password.dto';
 import { ApiError } from 'src/common/errors/api.error';
@@ -34,26 +34,31 @@ export class UserController {
   }
 
   @ApiOkResponse({ type: UsersDataDto })
+  @ApiInternalServerErrorResponse({ type: ApiErrorResponseDto })
   @Get('reports')
   async findReports(): Promise<UsersDataDto> {
     const data = await this.userService.getReports();
     return plainToInstance(UsersDataDto, data.toJSON(), { excludeExtraneousValues: true })
   }
 
+  @ApiOkResponse({ type: ResponseUserDto, isArray: true })
   @ApiBearerAuth('jwt')
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
-  async findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  async findAll(): Promise<ResponseUserDto[]> {
+    const users = await this.userService.findAll();
+    return plainToInstance(ResponseUserDto, users.map(user => user.toJSON()), { excludeExtraneousValues: true });
   }
 
+  @ApiOkResponse({ type: UsersDataDto })
   @ApiBearerAuth('jwt')
   @Roles('ADMIN', 'CLIENT', 'FREELANCER')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUserDto): Promise<[number, User[]]> {
-    return this.userService.update(id, updateUsuarioDto);
+  async update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUserDto): Promise<ResponseUserDto> {
+    const userUpdated = await this.userService.update(id, updateUsuarioDto);
+    return plainToInstance(ResponseUserDto, userUpdated.toJSON(), { excludeExtraneousValues: true })
   }
 
   @ApiBearerAuth('jwt')
